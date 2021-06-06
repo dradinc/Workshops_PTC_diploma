@@ -1,0 +1,641 @@
+{% extends 'template.html' %}
+
+{% block page_name %}
+    Активности
+{% endblock %}
+
+{% block page_content %}
+
+    <div class="d-flex w-100 h-100 p-3">
+        <div class="px-3 w-100">
+
+            <h1 class="text-center mt-2">Рассписание активностей: ({{number}}) {{workshop_page_dict.title}}</h1>
+            <div class="container">
+                <form class="m-0 t-0" method="post">
+                    <div class="row"><div class="col"></div><div class="col text-center"><h5>Неделя</h5></div><div class="col"></div></div>
+                    <div class="row">
+                        <div class="col text-end p-0"><button class="btn btn-outline-secondary pt-1 pb-2  px-2" type="submit" name="workshop_activity_submit" value="last_week"> << </button></div>
+                        <div class="col-auto text-center pt-1"><h5>{{week_days[0].day}} - {{week_days[6].day}}</h5></div>
+                        <div class="col text-start p-0"><button class="btn btn-outline-secondary pt-1 pb-2 px-2" type="submit" name="workshop_activity_submit" value="next_week"> >> </button></div>
+                    </div>
+                </form>
+            </div>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% if error %}
+                        <button class="mb-3 mt-3 list-group-item list-group-item-action list-group-item-danger"
+                                data-bs-target="#ActivityForm" data-bs-methods="add_activity" data-bs-toggle="modal"
+                                data-bs-date-text="{{new_activity.date}}"
+                                data-bs-activity_id="{{new_activity.activityID}}"
+                                data-bs-activity_title="{{new_activity.title}}"
+                                data-bs-activity_count_seats="{{new_activity.count_seats}}"
+                                data-bs-type_type_id="{{new_activity.type}}" data-bs-date="{{new_activity.date}}"
+                                data-bs-time_timeline_id="{{new_activity.timeline}}"
+                                data-bs-workshop_number="{{new_activity.workshop}}"
+                                data-bs-owner_id="{{new_activity.owner}}">
+                                                <div class="row">
+                                                    <div class="col text-start"><h5> <b>Активности</b></h5></div>
+                                                </div>
+                                                <div class="text-start px-0">
+                                                    <div class="col"><b>Ошибка</b>: {{ messages[0] }}</div>
+                                                </div>
+                        </button>
+                    {% else %}
+                        <button class="mb-3 mt-3 list-group-item list-group-item-action list-group-item-success"
+                                data-bs-target="#ActivityForm" data-bs-methods="edit_activity" data-bs-toggle="modal"
+                                    data-bs-date-text="{{new_activity.date}}"
+                                    data-bs-activity_id="{{new_activity.activityID}}"
+                                    data-bs-activity_title="{{new_activity.title}}"
+                                    data-bs-activity_count_seats="{{new_activity.count_seats}}"
+                                    data-bs-type_type_id="{{new_activity.type}}" data-bs-date="{{new_activity.date}}"
+                                    data-bs-time_timeline_id="{{new_activity.timeline}}"
+                                    data-bs-workshop_number="{{new_activity.workshop}}"
+                                    data-bs-owner_id="{{new_activity.owner}}">
+                                                <div class="row">
+                                                    <div class="col text-start"><h5> <b>Активность</b> </h5></div>
+                                                </div>
+                                                <div class="text-end px-0">
+                                                    <div class="col">{{ messages[0] }}</div>
+                                                </div>
+                                            </button>
+                    {%  endif %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="list-group mt-4">
+
+                <div class="container">
+                    <div class="row px-0 mx-0">
+                        <!-- Понедельник -->
+                        <div class="col-lg px-0 mx-2 my-2">
+                            <h5 class="row">Понедельник {{week_days[0].day}}</h5>
+                            {% if not current_user.is_anonymous %}
+                                {% if current_user.role == 0 or current_user.role == 1 %}
+                                    <button class="mb-2 list-group-item list-group-item-action list-group-item-success w-100 row" data-bs-target="#ActivityForm" data-bs-methods="add_activity" data-bs-date-text="{{week_days[0].day}}"
+                                                data-bs-toggle="modal" data-bs-activity_id="" data-bs-activity_title="" data-bs-activity_stauts="" data-bs-activity_booking="" data-bs-activity_count_seats=""
+                                                data-bs-type_type_id="" data-bs-type_title="" data-bs-date="{{week_days[0].day_for_query}}"
+                                                data-bs-time_timeline_id="" data-bs-time_title="" data-bs-time_start="" data-bs-time_end=""
+                                                data-bs-workshop_number="" data-bs-workshop_title="" data-bs-workshop_count_seats=""
+                                                data-bs-owner_id="" data-bs-owner_firstname="" data-bs-owner_lastname="" data-bs-owner)middlename="">
+                                <div class="row h-100 w-100 text-center"><h5>Добавить активность...</h5></div>
+                            </button>
+                                {% endif %}
+                            {% endif %}
+                            {% for activity in week_days[0].activity %}
+                            <button class="row mb-2 list-group-item-action list-group-item-info w-100 alert alert-info border border-primary border-2 p-0"
+                                                data-bs-target="#ActivityForm" data-bs-methods="edit_activity" data-bs-date="{{week_days[0].day_for_query}}"
+                                                data-bs-toggle="modal" data-bs-activity_id="{{activity.activityID}}" data-bs-activity_title="{{activity.title}}" data-bs-activity_stauts="{{activity.status}}" data-bs-activity_booking="{{activity.booking}}" data-bs-activity_count_seats="{{activity.count_seats}}"
+                                                data-bs-type_type_id="{{activity.type.typeID}}" data-bs-type_title="{{activity.type.title}}" data-bs-date-text="{{week_days[0].day}}"
+                                                data-bs-time_timeline_id="{{activity.time.timelineID}}" data-bs-time_title="{{activity.time.title}}" data-bs-time_start="{{activity.time.start}}" data-bs-time_end="{{activity.time.end}}"
+                                                data-bs-workshop_number="{{activity.workshop.number}}" data-bs-workshop_title="{{activity.workshop.title}}" data-bs-workshop_count_seats="{{activity.workshop.count_seats}}"
+                                                data-bs-owner_id="{{activity.owner.id}}" data-bs-owner_firstname="{{activity.owner.firstname}}" data-bs-owner_lastname="{{activity.owner.lastname}}" data-bs-owner)middlename="{{activity.owner.middlename}}">
+                                <div class="row border border-primary py-2 px-0  m-0">
+                                    <div class="row px-2 pt-1">
+                                        <div class="col text-start"><h6><b>{{activity.time.title}}</b>: {{activity.time.start}} - {{activity.time.end}} </h6></div>
+                                        <div class="col-3 text-end"><h6><b>Кабинет</b>: {{activity.workshop.number}}</h6></div>
+                                    </div>
+                                    <div class="row px-2">
+                                        <div class="col text-start"><h6><b>Мастерская</b>: {{activity.workshop.title}}</h6></div>
+                                        <div class="col-3 text-end"><h6><b>{{activity.type.title}}</b></h6></div>
+                                    </div>
+                                </div>
+                                <div class="row border border-primary py-2  m-0">
+                                    <div class="row p-0 m-0">
+                                        <div class="col p-0 m-0 text-start"><h6><b>Наименование</b>: {{activity.title}}</h6></div>
+                                    </div>
+                                    <div class="row p-0 m-0">
+                                        <div class="col m-0 p-0">Свободных мест: {{activity.workshop.count_seats - activity.count_seats}}</div>
+
+                                        <div class="col m-0 p-0 text-end"><b>Ведущий</b>: {{activity.owner.lastname}} {{activity.owner.firstname[:1]}}. {{activity.owner.middlename[:1]}}.</div>
+                                    </div>
+                                </div>
+                            </button>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Вторник -->
+                        <div class="col-lg px-0 mx-2 my-2">
+                            <h5 class="row">Вторник {{week_days[1].day}}</h5>
+                            {% if not current_user.is_anonymous %}
+                                {% if current_user.role == 0 or current_user.role == 1 %}
+                                    <button class="mb-2 list-group-item list-group-item-action list-group-item-success w-100 row" data-bs-target="#ActivityForm" data-bs-methods="add_activity"
+                                                data-bs-toggle="modal" data-bs-activity_id="" data-bs-activity_title="" data-bs-activity_stauts="" data-bs-activity_booking="" data-bs-activity_count_seats=""
+                                                data-bs-type_type_id="" data-bs-type_title="" data-bs-date-text="{{week_days[1].day}}"
+                                                data-bs-date="{{week_days[1].day_for_query}}"
+                                                data-bs-time_timeline_id="" data-bs-time_title="" data-bs-time_start="" data-bs-time_end=""
+                                                data-bs-workshop_number="" data-bs-workshop_title="" data-bs-workshop_count_seats=""
+                                                data-bs-owner_id="" data-bs-owner_firstname="" data-bs-owner_lastname="" data-bs-owner)middlename="">
+                                <div class="row h-100 w-100 text-center"><h5>Добавить активность...</h5></div>
+                            </button>
+                                {% endif %}
+                            {% endif %}
+                            {% for activity in week_days[1].activity %}
+                            <button class="row mb-2 list-group-item-action list-group-item-info w-100 alert alert-info border border-primary border-2 p-0"
+                                                data-bs-target="#ActivityForm" data-bs-methods="edit_activity" data-bs-date-text="{{week_days[1].day}}"
+                                                data-bs-toggle="modal" data-bs-activity_id="{{activity.activityID}}" data-bs-activity_title="{{activity.title}}" data-bs-activity_stauts="{{activity.status}}" data-bs-activity_booking="{{activity.booking}}" data-bs-activity_count_seats="{{activity.count_seats}}"
+                                                data-bs-type_type_id="{{activity.type.typeID}}" data-bs-type_title="{{activity.type.title}}"
+                                                data-bs-date="{{week_days[1].day_for_query}}"
+                                                data-bs-time_timeline_id="{{activity.time.timelineID}}" data-bs-time_title="{{activity.time.title}}" data-bs-time_start="{{activity.time.start}}" data-bs-time_end="{{activity.time.end}}"
+                                                data-bs-workshop_number="{{activity.workshop.number}}" data-bs-workshop_title="{{activity.workshop.title}}" data-bs-workshop_count_seats="{{activity.workshop.count_seats}}"
+                                                data-bs-owner_id="{{activity.owner.id}}" data-bs-owner_firstname="{{activity.owner.firstname}}" data-bs-owner_lastname="{{activity.owner.lastname}}" data-bs-owner)middlename="{{activity.owner.middlename}}">
+                                <div class="row border border-primary py-2 px-0  m-0">
+                                    <div class="row px-2 pt-1">
+                                        <div class="col text-start"><h6><b>{{activity.time.title}}</b>: {{activity.time.start}} - {{activity.time.end}} </h6></div>
+                                        <div class="col-3 text-end"><h6><b>Кабинет</b>: {{activity.workshop.number}}</h6></div>
+                                    </div>
+                                    <div class="row px-2">
+                                        <div class="col text-start"><h6><b>Мастерская</b>: {{activity.workshop.title}}</h6></div>
+                                        <div class="col-3 text-end"><h6><b>{{activity.type.title}}</b></h6></div>
+                                    </div>
+                                </div>
+                                <div class="row border border-primary py-2  m-0">
+                                    <div class="row p-0 m-0">
+                                        <div class="col p-0 m-0 text-start"><h6><b>Наименование</b>: {{activity.title}}</h6></div>
+                                    </div>
+                                    <div class="row p-0 m-0">
+                                        <div class="col m-0 p-0">Свободных мест: {{activity.workshop.count_seats - activity.count_seats}}</div>
+
+                                        <div class="col m-0 p-0 text-end"><b>Ведущий</b>: {{activity.owner.lastname}} {{activity.owner.firstname[:1]}}. {{activity.owner.middlename[:1]}}.</div>
+                                    </div>
+                                </div>
+                            </button>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Среда -->
+                        <div class="col-lg px-0 mx-2 my-2">
+                            <h5 class="row">Среда {{week_days[2].day}}</h5>
+                            {% if not current_user.is_anonymous %}
+                                {% if current_user.role == 0 or current_user.role == 1 %}
+                                    <button class="mb-2 list-group-item list-group-item-action list-group-item-success w-100 row" data-bs-target="#ActivityForm" data-bs-methods="add_activity"
+                                                data-bs-toggle="modal" data-bs-activity_id="" data-bs-activity_title="" data-bs-activity_stauts="" data-bs-activity_booking="" data-bs-activity_count_seats=""
+                                                data-bs-type_type_id="" data-bs-type_title="" data-bs-date-text="{{week_days[2].day}}"
+                                                data-bs-date="{{week_days[2].day_for_query}}"
+                                                data-bs-time_timeline_id="" data-bs-time_title="" data-bs-time_start="" data-bs-time_end=""
+                                                data-bs-workshop_number="" data-bs-workshop_title="" data-bs-workshop_count_seats=""
+                                                data-bs-owner_id="" data-bs-owner_firstname="" data-bs-owner_lastname="" data-bs-owner)middlename="">
+                                <div class="row h-100 w-100 text-center"><h5>Добавить активность...</h5></div>
+                            </button>
+                                {% endif %}
+                            {% endif %}
+                            {% for activity in week_days[2].activity %}
+                            <button class="row mb-2 list-group-item-action list-group-item-info w-100 alert alert-info border border-primary border-2 p-0"
+                                                data-bs-target="#ActivityForm" data-bs-methods="edit_activity" data-bs-date-text="{{week_days[2].day}}"
+                                                data-bs-toggle="modal" data-bs-activity_id="{{activity.activityID}}" data-bs-activity_title="{{activity.title}}" data-bs-activity_stauts="{{activity.status}}" data-bs-activity_booking="{{activity.booking}}" data-bs-activity_count_seats="{{activity.count_seats}}"
+                                                data-bs-type_type_id="{{activity.type.typeID}}" data-bs-type_title="{{activity.type.title}}"
+                                                data-bs-date="{{week_days[2].day_for_query}}"
+                                                data-bs-time_timeline_id="{{activity.time.timelineID}}" data-bs-time_title="{{activity.time.title}}" data-bs-time_start="{{activity.time.start}}" data-bs-time_end="{{activity.time.end}}"
+                                                data-bs-workshop_number="{{activity.workshop.number}}" data-bs-workshop_title="{{activity.workshop.title}}" data-bs-workshop_count_seats="{{activity.workshop.count_seats}}"
+                                                data-bs-owner_id="{{activity.owner.id}}" data-bs-owner_firstname="{{activity.owner.firstname}}" data-bs-owner_lastname="{{activity.owner.lastname}}" data-bs-owner)middlename="{{activity.owner.middlename}}">
+                                <div class="row border border-primary py-2 px-0  m-0">
+                                    <div class="row px-2 pt-1">
+                                        <div class="col text-start"><h6><b>{{activity.time.title}}</b>: {{activity.time.start}} - {{activity.time.end}} </h6></div>
+                                        <div class="col-3 text-end"><h6><b>Кабинет</b>: {{activity.workshop.number}}</h6></div>
+                                    </div>
+                                    <div class="row px-2">
+                                        <div class="col text-start"><h6><b>Мастерская</b>: {{activity.workshop.title}}</h6></div>
+                                        <div class="col-3 text-end"><h6><b>{{activity.type.title}}</b></h6></div>
+                                    </div>
+                                </div>
+                                <div class="row border border-primary py-2  m-0">
+                                    <div class="row p-0 m-0">
+                                        <div class="col p-0 m-0 text-start"><h6><b>Наименование</b>: {{activity.title}}</h6></div>
+                                    </div>
+                                    <div class="row p-0 m-0">
+                                        <div class="col m-0 p-0">Свободных мест: {{activity.workshop.count_seats - activity.count_seats}}</div>
+
+                                        <div class="col m-0 p-0 text-end"><b>Ведущий</b>: {{activity.owner.lastname}} {{activity.owner.firstname[:1]}}. {{activity.owner.middlename[:1]}}.</div>
+                                    </div>
+                                </div>
+                            </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="row px-0 mx-0">
+
+                        <!-- Четверг -->
+                        <div class="col-lg px-0 mx-2 my-2">
+                            <h5 class="row">Четверг {{week_days[3].day}}</h5>
+                            {% if not current_user.is_anonymous %}
+                                {% if current_user.role == 0 or current_user.role == 1 %}
+                                    <button class="mb-2 list-group-item list-group-item-action list-group-item-success w-100 row" data-bs-target="#ActivityForm" data-bs-methods="add_activity"
+                                                data-bs-toggle="modal" data-bs-activity_id="" data-bs-activity_title="" data-bs-activity_stauts="" data-bs-activity_booking="" data-bs-activity_count_seats=""
+                                                data-bs-type_type_id="" data-bs-type_title="" data-bs-date-text="{{week_days[3].day}}"
+                                                data-bs-date="{{week_days[3].day_for_query}}"
+                                                data-bs-time_timeline_id="" data-bs-time_title="" data-bs-time_start="" data-bs-time_end=""
+                                                data-bs-workshop_number="" data-bs-workshop_title="" data-bs-workshop_count_seats=""
+                                                data-bs-owner_id="" data-bs-owner_firstname="" data-bs-owner_lastname="" data-bs-owner)middlename="">
+                                <div class="row h-100 w-100 text-center"><h5>Добавить активность...</h5></div>
+                            </button>
+                                {% endif %}
+                            {% endif %}
+                            {% for activity in week_days[3].activity %}
+                            <button class="row mb-2 list-group-item-action list-group-item-info w-100 alert alert-info border border-primary border-2 p-0"
+                                                data-bs-target="#ActivityForm" data-bs-methods="edit_activity" data-bs-date-text="{{week_days[3].day}}"
+                                                data-bs-toggle="modal" data-bs-activity_id="{{activity.activityID}}" data-bs-activity_title="{{activity.title}}" data-bs-activity_stauts="{{activity.status}}" data-bs-activity_booking="{{activity.booking}}" data-bs-activity_count_seats="{{activity.count_seats}}"
+                                                data-bs-type_type_id="{{activity.type.typeID}}" data-bs-type_title="{{activity.type.title}}"
+                                                data-bs-date="{{week_days[3].day_for_query}}"
+                                                data-bs-time_timeline_id="{{activity.time.timelineID}}" data-bs-time_title="{{activity.time.title}}" data-bs-time_start="{{activity.time.start}}" data-bs-time_end="{{activity.time.end}}"
+                                                data-bs-workshop_number="{{activity.workshop.number}}" data-bs-workshop_title="{{activity.workshop.title}}" data-bs-workshop_count_seats="{{activity.workshop.count_seats}}"
+                                                data-bs-owner_id="{{activity.owner.id}}" data-bs-owner_firstname="{{activity.owner.firstname}}" data-bs-owner_lastname="{{activity.owner.lastname}}" data-bs-owner)middlename="{{activity.owner.middlename}}">
+                                <div class="row border border-primary py-2 px-0  m-0">
+                                    <div class="row px-2 pt-1">
+                                        <div class="col text-start"><h6><b>{{activity.time.title}}</b>: {{activity.time.start}} - {{activity.time.end}} </h6></div>
+                                        <div class="col-3 text-end"><h6><b>Кабинет</b>: {{activity.workshop.number}}</h6></div>
+                                    </div>
+                                    <div class="row px-2">
+                                        <div class="col text-start"><h6><b>Мастерская</b>: {{activity.workshop.title}}</h6></div>
+                                        <div class="col-3 text-end"><h6><b>{{activity.type.title}}</b></h6></div>
+                                    </div>
+                                </div>
+                                <div class="row border border-primary py-2  m-0">
+                                    <div class="row p-0 m-0">
+                                        <div class="col p-0 m-0 text-start"><h6><b>Наименование</b>: {{activity.title}}</h6></div>
+                                    </div>
+                                    <div class="row p-0 m-0">
+                                        <div class="col m-0 p-0">Свободных мест: {{activity.workshop.count_seats - activity.count_seats}}</div>
+
+                                        <div class="col m-0 p-0 text-end"><b>Ведущий</b>: {{activity.owner.lastname}} {{activity.owner.firstname[:1]}}. {{activity.owner.middlename[:1]}}.</div>
+                                    </div>
+                                </div>
+                            </button>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Пятница -->
+                        <div class="col-lg px-0 mx-2 my-2">
+                            <h5 class="row">Пятница {{week_days[4].day}}</h5>
+                            {% if not current_user.is_anonymous %}
+                                {% if current_user.role == 0 or current_user.role == 1 %}
+                                    <button class="mb-2 list-group-item list-group-item-action list-group-item-success w-100 row" data-bs-target="#ActivityForm" data-bs-methods="add_activity"
+                                                data-bs-toggle="modal" data-bs-activity_id="" data-bs-activity_title="" data-bs-activity_stauts="" data-bs-activity_booking="" data-bs-activity_count_seats=""
+                                                data-bs-type_type_id="" data-bs-type_title="" data-bs-date-text="{{week_days[4].day}}"
+                                                data-bs-date="{{week_days[4].day_for_query}}"
+                                                data-bs-time_timeline_id="" data-bs-time_title="" data-bs-time_start="" data-bs-time_end=""
+                                                data-bs-workshop_number="" data-bs-workshop_title="" data-bs-workshop_count_seats=""
+                                                data-bs-owner_id="" data-bs-owner_firstname="" data-bs-owner_lastname="" data-bs-owner)middlename="">
+                                <div class="row h-100 w-100 text-center"><h5>Добавить активность...</h5></div>
+                            </button>
+                                {% endif %}
+                            {% endif %}
+                            {% for activity in week_days[4].activity %}
+                            <button class="row mb-2 list-group-item-action list-group-item-info w-100 alert alert-info border border-primary border-2 p-0"
+                                                data-bs-target="#ActivityForm" data-bs-methods="edit_activity" data-bs-date-text="{{week_days[5].day}}"
+                                                data-bs-toggle="modal" data-bs-activity_id="{{activity.activityID}}" data-bs-activity_title="{{activity.title}}" data-bs-activity_stauts="{{activity.status}}" data-bs-activity_booking="{{activity.booking}}" data-bs-activity_count_seats="{{activity.count_seats}}"
+                                                data-bs-type_type_id="{{activity.type.typeID}}" data-bs-type_title="{{activity.type.title}}"
+                                                data-bs-date="{{week_days[4].day_for_query}}"
+                                                data-bs-time_timeline_id="{{activity.time.timelineID}}" data-bs-time_title="{{activity.time.title}}" data-bs-time_start="{{activity.time.start}}" data-bs-time_end="{{activity.time.end}}"
+                                                data-bs-workshop_number="{{activity.workshop.number}}" data-bs-workshop_title="{{activity.workshop.title}}" data-bs-workshop_count_seats="{{activity.workshop.count_seats}}"
+                                                data-bs-owner_id="{{activity.owner.id}}" data-bs-owner_firstname="{{activity.owner.firstname}}" data-bs-owner_lastname="{{activity.owner.lastname}}" data-bs-owner)middlename="{{activity.owner.middlename}}">
+                                <div class="row border border-primary py-2  px-0  m-0">
+                                    <div class="row px-2 pt-1">
+                                        <div class="col text-start"><h6><b>{{activity.time.title}}</b>: {{activity.time.start}} - {{activity.time.end}} </h6></div>
+                                        <div class="col-3 text-end"><h6><b>Кабинет</b>: {{activity.workshop.number}}</h6></div>
+                                    </div>
+                                    <div class="row px-2">
+                                        <div class="col text-start"><h6><b>Мастерская</b>: {{activity.workshop.title}}</h6></div>
+                                        <div class="col-3 text-end"><h6><b>{{activity.type.title}}</b></h6></div>
+                                    </div>
+                                </div>
+                                <div class="row border border-primary py-2  m-0">
+                                    <div class="row p-0 m-0">
+                                        <div class="col p-0 m-0 text-start"><h6><b>Наименование</b>: {{activity.title}}</h6></div>
+                                    </div>
+                                    <div class="row p-0 m-0">
+                                        <div class="col m-0 p-0">Свободных мест: {{activity.workshop.count_seats - activity.count_seats}}</div>
+
+                                        <div class="col m-0 p-0 text-end"><b>Ведущий</b>: {{activity.owner.lastname}} {{activity.owner.firstname[:1]}}. {{activity.owner.middlename[:1]}}.</div>
+                                    </div>
+                                </div>
+                            </button>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Суббота -->
+                        <div class="col-lg px-0 mx-2 my-2">
+                            <h5 class="row">Суббота {{week_days[5].day}}</h5>
+                            {% if not current_user.is_anonymous %}
+                                {% if current_user.role == 0 or current_user.role == 1 %}
+                                    <button class="mb-2 list-group-item list-group-item-action list-group-item-success w-100 row" data-bs-target="#ActivityForm" data-bs-methods="add_activity"
+                                                data-bs-toggle="modal" data-bs-activity_id="" data-bs-activity_title="" data-bs-activity_stauts="" data-bs-activity_booking="" data-bs-activity_count_seats=""
+                                                data-bs-type_type_id="" data-bs-type_title="" data-bs-date-text="{{week_days[5].day}}"
+                                                data-bs-date="{{week_days[5].day_for_query}}"
+                                                data-bs-time_timeline_id="" data-bs-time_title="" data-bs-time_start="" data-bs-time_end=""
+                                                data-bs-workshop_number="" data-bs-workshop_title="" data-bs-workshop_count_seats=""
+                                                data-bs-owner_id="" data-bs-owner_firstname="" data-bs-owner_lastname="" data-bs-owner)middlename="">
+                                <div class="row h-100 w-100 text-center"><h5>Добавить активность...</h5></div>
+                            </button>
+                                {% endif %}
+                            {% endif %}
+                            {% for activity in week_days[5].activity %}
+                            <button class="row mb-2 list-group-item-action list-group-item-info w-100 alert alert-info border border-primary border-2 p-0"
+                                                data-bs-target="#ActivityForm" data-bs-methods="edit_activity" data-bs-date-text="{{week_days[5].day}}"
+                                                data-bs-toggle="modal" data-bs-activity_id="{{activity.activityID}}" data-bs-activity_title="{{activity.title}}" data-bs-activity_stauts="{{activity.status}}" data-bs-activity_booking="{{activity.booking}}" data-bs-activity_count_seats="{{activity.count_seats}}"
+                                                data-bs-type_type_id="{{activity.type.typeID}}" data-bs-type_title="{{activity.type.title}}"
+                                                data-bs-date="{{week_days[5].day_for_query}}"
+                                                data-bs-time_timeline_id="{{activity.time.timelineID}}" data-bs-time_title="{{activity.time.title}}" data-bs-time_start="{{activity.time.start}}" data-bs-time_end="{{activity.time.end}}"
+                                                data-bs-workshop_number="{{activity.workshop.number}}" data-bs-workshop_title="{{activity.workshop.title}}" data-bs-workshop_count_seats="{{activity.workshop.count_seats}}"
+                                                data-bs-owner_id="{{activity.owner.id}}" data-bs-owner_firstname="{{activity.owner.firstname}}" data-bs-owner_lastname="{{activity.owner.lastname}}" data-bs-owner)middlename="{{activity.owner.middlename}}">
+                                <div class="row border border-primary py-2 px-0  m-0">
+                                    <div class="row px-2 pt-1">
+                                        <div class="col text-start"><h6><b>{{activity.time.title}}</b>: {{activity.time.start}} - {{activity.time.end}} </h6></div>
+                                        <div class="col-3 text-end"><h6><b>Кабинет</b>: {{activity.workshop.number}}</h6></div>
+                                    </div>
+                                    <div class="row px-2">
+                                        <div class="col text-start"><h6><b>Мастерская</b>: {{activity.workshop.title}}</h6></div>
+                                        <div class="col-3 text-end"><h6><b>{{activity.type.title}}</b></h6></div>
+                                    </div>
+                                </div>
+                                <div class="row border border-primary py-2  m-0">
+                                    <div class="row p-0 m-0">
+                                        <div class="col p-0 m-0 text-start"><h6><b>Наименование</b>: {{activity.title}}</h6></div>
+                                    </div>
+                                    <div class="row p-0 m-0">
+                                        <div class="col m-0 p-0">Свободных мест: {{activity.workshop.count_seats - activity.count_seats}}</div>
+
+                                        <div class="col m-0 p-0 text-end"><b>Ведущий</b>: {{activity.owner.lastname}} {{activity.owner.firstname[:1]}}. {{activity.owner.middlename[:1]}}.</div>
+                                    </div>
+                                </div>
+                            </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="row px-0 mx-0">
+
+                        <!-- Воскресенье -->
+                        <div class="col-lg px-0 mx-2 my-2">
+                            <h5 class="row">Воскресенье {{week_days[6].day}}</h5>
+                            {% if not current_user.is_anonymous %}
+                                {% if current_user.role == 0 or current_user.role == 1 %}
+                                    <button class="mb-2 list-group-item list-group-item-action list-group-item-success w-100 row" data-bs-target="#ActivityForm" data-bs-methods="add_activity"
+                                                data-bs-toggle="modal" data-bs-activity_id="" data-bs-activity_title="" data-bs-activity_stauts="" data-bs-activity_booking="" data-bs-activity_count_seats=""
+                                                data-bs-type_type_id="" data-bs-type_title="" data-bs-date-text="{{week_days[6].day}}"
+                                                data-bs-date="{{week_days[6].day_for_query}}"
+                                                data-bs-time_timeline_id="" data-bs-time_title="" data-bs-time_start="" data-bs-time_end=""
+                                                data-bs-workshop_number="" data-bs-workshop_title="" data-bs-workshop_count_seats=""
+                                                data-bs-owner_id="" data-bs-owner_firstname="" data-bs-owner_lastname="" data-bs-owner)middlename="">
+                                <div class="row h-100 w-100 text-center"><h5>Добавить активность...</h5></div>
+                            </button>
+                                {% endif %}
+                            {% endif %}
+                            {% for activity in week_days[6].activity %}
+                            <button class="row mb-2 list-group-item-action list-group-item-info w-100 alert alert-info border border-primary border-2 p-0"
+                                                data-bs-target="#ActivityForm" data-bs-methods="edit_activity" data-bs-date-text="{{week_days[6].day}}"
+                                                data-bs-toggle="modal" data-bs-activity_id="{{activity.activityID}}" data-bs-activity_title="{{activity.title}}" data-bs-activity_stauts="{{activity.status}}" data-bs-activity_booking="{{activity.booking}}" data-bs-activity_count_seats="{{activity.count_seats}}"
+                                                data-bs-type_type_id="{{activity.type.typeID}}" data-bs-type_title="{{activity.type.title}}"
+                                                data-bs-date="{{week_days[6].day_for_query}}"
+                                                data-bs-time_timeline_id="{{activity.time.timelineID}}" data-bs-time_title="{{activity.time.title}}" data-bs-time_start="{{activity.time.start}}" data-bs-time_end="{{activity.time.end}}"
+                                                data-bs-workshop_number="{{activity.workshop.number}}" data-bs-workshop_title="{{activity.workshop.title}}" data-bs-workshop_count_seats="{{activity.workshop.count_seats}}"
+                                                data-bs-owner_id="{{activity.owner.id}}" data-bs-owner_firstname="{{activity.owner.firstname}}" data-bs-owner_lastname="{{activity.owner.lastname}}" data-bs-owner)middlename="{{activity.owner.middlename}}">
+                                <div class="row border border-primary py-2 px-0  m-0">
+                                    <div class="row px-2 pt-1">
+                                        <div class="col text-start"><h6><b>{{activity.time.title}}</b>: {{activity.time.start}} - {{activity.time.end}} </h6></div>
+                                        <div class="col-3 text-end"><h6><b>Кабинет</b>: {{activity.workshop.number}}</h6></div>
+                                    </div>
+                                    <div class="row px-2">
+                                        <div class="col text-start"><h6><b>Мастерская</b>: {{activity.workshop.title}}</h6></div>
+                                        <div class="col-3 text-end"><h6><b>{{activity.type.title}}</b></h6></div>
+                                    </div>
+                                </div>
+                                <div class="row border border-primary py-2  m-0">
+                                    <div class="row p-0 m-0">
+                                        <div class="col p-0 m-0 text-start"><h6><b>Наименование</b>: {{activity.title}}</h6></div>
+                                    </div>
+                                    <div class="row p-0 m-0">
+                                        <div class="col m-0 p-0">Свободных мест: {{activity.workshop.count_seats - activity.count_seats}}</div>
+
+                                        <div class="col m-0 p-0 text-end"><b>Ведущий</b>: {{activity.owner.lastname}} {{activity.owner.firstname[:1]}}. {{activity.owner.middlename[:1]}}.</div>
+                                    </div>
+                                </div>
+                            </button>
+                            {% endfor %}
+                        </div>
+
+                        <!--  -->
+                        <div class="col-lg px-0 mx-2 my-2">
+
+                        </div>
+
+                        <!--  -->
+                        <div class="col-lg px-0 mx-2 my-2">
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Форма  -->
+    <div class="modal fade" id="ActivityForm" tabindex="-1" aria-labelledby="exampleModalCenteredScrollableTitle" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="title">Активность</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body text-center">
+                    <div class="form-signin w-80">
+                        <form method="POST" class="grid w-80">
+                            <div class="row">
+                                <!-- ID -->
+                                <div class="row mb-2">
+                                    <div class="col-3 py-1 text-end"><b>ID:</b></div>
+                                    <div class="col"><input class="form-control activity_id" readonly="readonly" name="input_activity_id" id="input_activity_id"></div>
+                                </div>
+
+                                <!-- Наименование -->
+                                <div class="row mb-2">
+                                    <div class="col-3 py-1 text-end"><b>Название:</b></div>
+                                    <div class="col"><textarea class="form-control activity_title" name="input_title" id="input_title" style="resize: None;"></textarea></div>
+                                </div>
+
+                                <!-- Дата -->
+                                <div class="row mb-2">
+                                    <div class="col-3 py-1 text-end"><b>Дата:</b></div>
+                                    <div class="col"><input type="date" class="form-control activity_date" name="input_date" id="input_date" readonly="readonly"></div>
+                                </div>
+
+                                <!-- Количество необходим мест -->
+                                <div class="row mb-2">
+                                    <div class="col-3 py-1 px-1 text-end"><b>Нужно мест:</b></div>
+                                    <div class="col"><input class="form-control activity_count_seats" name="input_count_seats" id="input_count_seats"></div>
+                                </div>
+
+                                <!-- Тип активности -->
+                                <div class="row mb-2">
+                                    <div class="col-3 py-1 text-end"><b>Тип:</b></div>
+                                    <div class="col">
+                                        <select class="form-select activity_type" name="select_type" id="select_type">
+                                            {% for type in activity_type %}
+                                                <option value="{{ type.typeID }}">
+                                                    {{ type.title }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Временной промежуток -->
+                                <div class="row mb-2">
+                                    <div class="col-3 py-1 text-end"><b>Время:</b></div>
+                                    <div class="col">
+                                        <select class="form-select activity_time" name="select_time" id="select_time">
+                                            {% for time in timeline %}
+                                                <option value="{{ time.timelineID }}">
+                                                    {{ time.title }} ({{ time.start }} - {{ time.end }})
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Мастерская -->
+                                <div class="row mb-2">
+                                    <div class="col-3 py-1 text-end"><b>Мастерская:</b></div>
+                                    <div class="col">
+                                        <select class="form-select activity_workshop" name="select_workshop" id="select_workshop">
+                                            {% for workshop in workshops %}
+                                                <option value="{{ workshop.number }}">
+                                                   {{ workshop.number }}-{{ workshop.title[:25] }}...
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Ведущий -->
+                                <div class="row mb-2">
+                                    <div class="col-3 py-1 text-end"><b>Ведущий:</b></div>
+                                    <div class="col">
+                                        <select class="form-select activity_owner" name="select_owner" id="select_owner">
+                                            <option value="0"></option>
+                                            {% for owner_item in owner %}
+                                                <option value="{{ owner_item.id }}">
+                                                    {{ owner_item.lastname }} {{ owner_item.firstname[:1] }}. {{ owner_item.middlename[:1] }}.
+                                                    ({% if owner_item.role == 0 %}
+                                                        Администратор
+                                                    {% elif owner_item.role == 1 %}
+                                                        Диспетчер-расписания
+                                                    {% elif owner_item.role == 2 %}
+                                                        Преподаватель
+                                                    {% endif %})
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {% if not current_user.is_anonymous %}
+                                    {% if current_user.role == 0 or current_user.role == 1 %}
+                                    <div class="row mb-2 mt-4">
+                                        <div class="col"><button class="btn btn-outline-success w-100 btn-add-edit-act" name="workshop_activity_submit"></button></div>
+                                        <div class="col"><button class="btn btn-outline-danger w-100 btn-del-act" name="workshop_activity_submit">Удалить</button></div>
+                                    </div>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script>
+        var ActivityForm = document.getElementById('ActivityForm')
+        ActivityForm.addEventListener('show.bs.modal', function (event) {
+
+            var button = event.relatedTarget
+
+            //
+            var methods = button.getAttribute('data-bs-methods')
+
+            // Активность
+            var activity_date_text = button.getAttribute('data-bs-date-text')
+            var activity_date = button.getAttribute('data-bs-date')
+            var activityID = button.getAttribute('data-bs-activity_id')
+            var activity_title = button.getAttribute('data-bs-activity_title')
+            var status = button.getAttribute('data-bs-activity_status')
+            var booking = button.getAttribute('data-bs-activity_booking')
+            var count_seats = button.getAttribute('data-bs-activity_count_seats')
+            // Тип
+            var typeID = button.getAttribute('data-bs-type_type_id')
+            var type_title = button.getAttribute('data-bs-type_type_title')
+            // Промежуток
+            var timelineID = button.getAttribute('data-bs-time_timeline_id')
+            var time_title = button.getAttribute('data-bs-time_title')
+            var time_start = button.getAttribute('data-bs-time_start')
+            var time_end = button.getAttribute('data-bs-time_end')
+            // Мастерская
+            var workshop_number = button.getAttribute('data-bs-workshop_number')
+            var workshop_title = button.getAttribute('data-bs-workshop_title')
+            var workshop_count_seats = button.getAttribute('data-bs-workshop_count_seats')
+            // Ведущий
+            var owner_id = button.getAttribute('data-bs-owner_id')
+            var owner_firstname = button.getAttribute('data-bs-owner_firstname')
+            var owner_lastname = button.getAttribute('data-bs-owner_lastname')
+            var owner_middlename = button.getAttribute('data-bs-owner_middlename')
+
+            {% if not current_user.is_anonymous %}
+                {% if current_user.role == 0 or current_user.role == 1 %}
+                    // Кнопки
+                    var modalButtonDel = ActivityForm.querySelector('.btn-del-act')
+                    var modalButtonAddEdit = ActivityForm.querySelector('.btn-add-edit-act')
+
+                    if (methods === 'add_activity') {
+                        modalButtonDel.disabled = true;
+                        modalButtonAddEdit.value = 'add_activity'
+                        modalButtonAddEdit.textContent = 'Добавить'
+                    }
+                    else {
+                        modalButtonDel.disabled = false
+                        modalButtonDel.value = 'del_activity'
+                        modalButtonAddEdit.value = 'edit_activity'
+                        modalButtonAddEdit.textContent = 'Изменить'
+                    }
+                {% endif %}
+            {% endif %}
+
+            // Поля ввода
+            var labelTitle = ActivityForm.querySelector('.modal-title')
+            var inputActivityID = ActivityForm.querySelector('.activity_id')
+            var inputActivityTitle = ActivityForm.querySelector('.activity_title')
+            var inputActivityDate = ActivityForm.querySelector('.activity_date')
+            var inputActivityCountSeats = ActivityForm.querySelector('.activity_count_seats')
+            var selectActivityType = ActivityForm.querySelector('.activity_type')
+            var selectActivityTime = ActivityForm.querySelector('.activity_time')
+            var selectActivityWorkshop = ActivityForm.querySelector('.activity_workshop')
+            var selectActivityOwner = ActivityForm.querySelector('.activity_owner')
+
+            {% if current_user.is_anonymous %}
+                inputActivityTitle.disabled = true
+                inputActivityCountSeats.disabled = true
+                selectActivityType.disabled = true
+                selectActivityTime.disabled = true
+                selectActivityWorkshop.disabled = true
+                selectActivityOwner.disabled = true
+            {% endif %}
+
+            labelTitle.textContent = 'Активность ' + ' (' + activity_date_text + ')'
+            inputActivityID.value = activityID
+            inputActivityTitle.value = activity_title
+            inputActivityDate.value = activity_date
+            inputActivityCountSeats.value = count_seats
+            selectActivityType.value = typeID
+            selectActivityTime.value = timelineID
+            selectActivityWorkshop.value = {{number}}
+            selectActivityOwner.value = owner_id
+        })
+    </script>
+{% endblock %}

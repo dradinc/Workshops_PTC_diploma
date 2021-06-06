@@ -1,0 +1,247 @@
+{% extends 'template.html' %}
+
+{% block page_name %}
+    Пользователи
+{% endblock %}
+
+{% block page_content %}
+
+    <!--  -->
+    <div class="d-flex w-100 h-100 p-3">
+        <div class="px-3 w-100">
+            <h1 class="text-center mb-5">Пользователи</h1>
+            <div class="list-group">
+                {% if current_user.role == 0 %}
+                    <button class="mb-2 list-group-item list-group-item-action list-group-item-success w-100" data-bs-toggle="modal"
+                            data-bs-target="#addNewUser"
+                                data-bs-user-login="{{ new_user.login }}"
+                                data-bs-user-name="{{ new_user.firstname }}"
+                                data-bs-user-lastname="{{ new_user.lastname }}"
+                                data-bs-user-middlename="{{ new_user.middlename }}"
+                                data-bs-user-role="{{ new_user.role }}">
+                        <div class="row h-100 w-100 text-center"><h4>Добавить пользователя...</h4></div>
+                    </button>
+
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% if error %}
+                                <article class="alert alert-danger" role="alert">{{ messages[0] }}</article>
+                            {% else %}
+                                <article class="alert alert-success" role="alert">{{ messages[0] }}</article>
+                            {% endif %}
+                        {% endif %}
+                    {% endwith %}
+
+                {% endif %}
+
+                {% for user in all_users %}
+                    <button class="mb-2 list-group-item-action list-group-item-info w-100 alert alert-info" data-bs-toggle="modal"
+                            data-bs-target="#userInfo"
+                                data-bs-user-id="{{user.id}}"
+                                data-bs-user-login="{{ user.login }}"
+                                data-bs-user-name="{{ user.firstname }}"
+                                data-bs-user-lastname="{{ user.lastname }}"
+                                data-bs-user-middlename="{{ user.middlename }}"
+                                data-bs-user-role="{{ user.role }}">
+                        <div class="row">
+                            <div class="col text-start"><h5><b>{{ user.lastname }} {{ user.firstname }} {{ user.middlename }}</b></h5></div>
+                            <div class="col-3 text-end"><h6> <b>Логин</b>: {{ user.login }} </h6></div>
+                        </div>
+                        <div class="row">
+                            <div class="col text-start">
+                                <b>Роль</b>:
+                                {% if user.role == 0 %}
+                                    Администратор
+                                {% elif user.role == 1 %}
+                                    Диспетчер-расписания
+                                {% elif user.role == 2 %}
+                                    Преподаватель
+                                {% endif %}
+                            </div>
+                        </div>
+                    </button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Форма добавления пользователя -->
+    <div class="modal fade" id="addNewUser" tabindex="-1" aria-labelledby="exampleModalCenteredScrollableTitle" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenteredScrollableTitle">Добавление пользователя</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body text-center">
+                    <div class="form-signin w-80">
+                        <form method="POST" class="grid w-80">
+                            <label for="login" class="visually-hidden">Login</label>
+                            <input type="text" id="login" name="login" class="form-control mb-2 user-login" placeholder="Логин" autofocus="">
+
+                            <label for="password" class="visually-hidden">Password</label>
+                            <input type="password" id="password" name="password"class="form-control mb-2" placeholder="Пароль">
+
+                            <select class="form-select mb-2 user-role" id="role" name="role" aria-label="Default select example">
+                                <option value="0">Администратор</option>
+                                <option value="1">Диспетчер-расписания</option>
+                                <option value="2">Преподаватель</option>
+                            </select>
+
+
+                            <label for="lastname" class="visually-hidden">LastName</label>
+                            <input type="text" id="lastname" name="lastname" class="form-control mb-2 user-lastname" placeholder="Фамилия" autofocus="">
+
+                            <label for="firstname" class="visually-hidden">Name</label>
+                            <input type="text" id="firstname" name="firstname" class="form-control mb-2 user-name" placeholder="Имя" autofocus="">
+
+                            <label for="middlename" class="visually-hidden">MiddleName</label>
+                            <input type="text" id="middlename" name="middlename" class="form-control mb-4 user-middlename" placeholder="Отчество" autofocus="">
+
+                            <button class="w-100 btn btn-outline-success mb-0" type="submit" name="submit_user" value="add_user">Добавить</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Отмена</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script>
+        var addNewUserModal = document.getElementById('addNewUser')
+        addNewUserModal.addEventListener('show.bs.modal', function (event) {
+
+          var button = event.relatedTarget
+
+          var userLogin = button.getAttribute('data-bs-user-login')
+          var userName = button.getAttribute('data-bs-user-name')
+          var userLastName = button.getAttribute('data-bs-user-lastname')
+          var userMiddleName = button.getAttribute('data-bs-user-middlename')
+          var userRole = button.getAttribute('data-bs-user-role')
+
+          var modalUserLogin = addNewUserModal.querySelector('.user-login')
+          var modalUserName = addNewUserModal.querySelector('.user-name')
+          var modalUserLastName = addNewUserModal.querySelector('.user-lastname')
+          var modalUserMiddleName = addNewUserModal.querySelector('.user-middlename')
+          var modalUserRole = addNewUserModal.querySelector('.user-role')
+
+          modalUserLogin.value = userLogin
+          modalUserName.value = userName
+          modalUserLastName.value = userLastName
+          modalUserMiddleName.value = userMiddleName
+          modalUserRole.value = userRole
+        })
+    </script>
+
+
+    <!-- Форма данных пользователей -->
+    <div class="modal fade" id="userInfo" tabindex="-1" aria-labelledby="exampleModalCenteredScrollableTitle" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userInfoTitle">Данные пользователя</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form method="post">
+                        <div class="grid">
+
+                            <!-- userID -->
+                            <div class="row">
+                                <div class="col-4"><label for="userID"><b>ID:</b></label></div>
+                                <div class="col"><input type="text" class="disabled w-100 user-id form-control mb-2" readonly="readonly" name="userID" id="userID"></div>
+                            </div>
+
+                            <!-- Login -->
+                            <div class="row">
+                                <div class="col-4"><label for="edit_login"><b>Логин:</b></label></div>
+                                <div class="col"><input type="text" class="w-100 user-login form-control mb-2" name="edit_login" id="edit_login"></div>
+                            </div>
+
+                            <!-- LastName -->
+                            <div class="row">
+                                <div class="col-4"><label for="edit_lastname"><b>Фамилия: </b></label></div>
+                                <div class="col"><input type="text" class="w-100 user-lastname form-control mb-2" name="edit_lastname" id="edit_lastname"></div>
+                            </div>
+
+                            <!-- Name -->
+                            <div class="row">
+                                <div class="col-4"><label class="h-100 w-100" for="edit_firstname"><b>Имя: </b></label></div>
+                                <div class="col"><input type="text" class="w-100 user-name form-control mb-2" name="edit_firstname" id="edit_firstname"></div>
+                            </div>
+
+                            <!-- MiddleName -->
+                            <div class="row">
+                                <div class="col-4"><label for="edit_middlename"><b>Отчество: </b></label></div>
+                                <div class="col"><input type="text" class="w-100 user-middlename form-control mb-2" name="edit_middlename" id="edit_middlename"></div>
+                            </div>
+
+                            <!-- Role -->
+                            <div class="row">
+                                <div class="col">
+                                    <select class="form-select mb-4 user-role" aria-label="Default select example" name="edit_role" id="edit_role">
+                                        <option value="0">Администратор</option>
+                                        <option value="1">Диспетчер-расписания</option>
+                                        <option value="2">Преподаватель</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="row">
+                                <div class="col">
+                                    <button type="submit" class="btn btn-outline-primary w-100 md-3" name="submit_user" value="edit_user">Изменить</button>
+                                </div>
+                                <div class="col">
+                                    <button type="submit" class="btn btn-outline-danger w-100 md-3" name="submit_user" value="del_user" disabled="disabled">Удалить</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script>
+        var userInfoModal = document.getElementById('userInfo')
+        userInfoModal.addEventListener('show.bs.modal', function (event) {
+
+          var button = event.relatedTarget
+
+          var userID = button.getAttribute('data-bs-user-id')
+          var userLogin = button.getAttribute('data-bs-user-login')
+          var userName = button.getAttribute('data-bs-user-name')
+          var userLastName = button.getAttribute('data-bs-user-lastname')
+          var userMiddleName = button.getAttribute('data-bs-user-middlename')
+          var userRole = button.getAttribute('data-bs-user-role')
+
+          var modalUserID = userInfoModal.querySelector('.user-id')
+          var modalUserLogin = userInfoModal.querySelector('.user-login')
+          var modalUserName = userInfoModal.querySelector('.user-name')
+          var modalUserLastName = userInfoModal.querySelector('.user-lastname')
+          var modalUserMiddleName = userInfoModal.querySelector('.user-middlename')
+          var modalUserRole = userInfoModal.querySelector('.user-role')
+
+          modalUserID.value = userID
+          modalUserLogin.value = userLogin
+          modalUserName.value = userName
+          modalUserLastName.value = userLastName
+          modalUserMiddleName.value = userMiddleName
+          modalUserRole.value = userRole
+        })
+    </script>
+{% endblock %}

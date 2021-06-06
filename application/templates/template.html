@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block page_name %}{% endblock %}</title>
+
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
+            crossorigin="anonymous"></script>
+
+    <style>
+        main {
+            margin-top: 65px;
+        }
+        html, body {
+            background-color: #DCDCDC;
+            display: grid;
+            height: 100%;
+        }
+    </style>
+</head>
+<body class="d-flex h-100">
+    <div class="cover-container d-flex w-100 h-100 mx-auto flex-column">
+        <header class="mb-auto">
+            <nav class="navbar navbar-expand{% if not current_user.is_anonymous %}-md{% endif %} navbar-dark fixed-top bg-dark">
+                <div class="container-fluid">
+
+                    <a class="navbar-brand" href="/">
+                        <img src="{{ url_for('static', filename='image/icon.png') }}" alt="" width="33" height="33" class="d-inline-block align-top">
+                        Мастерские ПТК
+                    </a>
+
+                    {% if not current_user.is_anonymous %}
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample03" aria-controls="navbarsExample03" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+
+                        <div class="collapse navbar-collapse" id="navbarsExample03">
+
+                            <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                                <!--
+                                <li class="nav-item">
+                                    {% if page=='profile' %}
+                                        <a class="nav-link active" aria-current="page" href="?profile={{current_user.id}}">Профиль</a>
+                                    {% else %}
+                                        <a class="nav-link" aria-current="page" href="?profile={{current_user.id}}">Профиль</a>
+                                    {% endif %}
+                                </li>
+                                -->
+
+                                <li class="nav-item">
+                                    {% if page=='workshops' %}
+                                        <a class="nav-link active" aria-current="page" href="/workshops">Мастерские</a>
+                                    {% else %}
+                                        <a class="nav-link" aria-current="page" href="/workshops">Мастерские</a>
+                                    {% endif %}
+                                </li>
+
+                                {% if current_user.role == 0 %}
+
+                                    <li class="nav-item">
+                                        {% if page=='users' %}
+                                            <a class="nav-link active" aria-current="page" href="/users">Пользователи</a>
+                                        {% else %}
+                                            <a class="nav-link" aria-current="page" href="/users">Пользователи</a>
+                                        {% endif %}
+                                    </li>
+
+                                    <li class="nav-item">
+                                        {% if page=='type_and_time' %}
+                                            <a class="nav-link active" aria-current="page" href="/type_and_time">Типы и время</a>
+                                        {% else %}
+                                            <a class="nav-link" aria-current="page" href="/type_and_time">Типы и время</a>
+                                        {% endif %}
+                                    </li>
+
+                                {% elif current_user.role == 1 %}
+
+                                    <li class="nav-item">
+                                        {% if page=='type_and_time' %}
+                                            <a class="nav-link active" aria-current="page" href="/type_and_time">Типы и время</a>
+                                        {% else %}
+                                            <a class="nav-link" aria-current="page" href="/type_and_time">Типы и время</a>
+                                        {% endif %}
+                                    </li>
+
+                                {% endif %}
+                            </ul>
+
+                            <div class="d-flex">
+                                <button class="btn btn btn-info me-2" data-bs-toggle="modal" data-bs-target="#userInfo">{{current_user.login}}</button>
+                                <a class="btn btn btn-outline-danger" href="/logout">Выход</a>
+                            </div>
+
+                        </div>
+                    {% endif %}
+
+                    {% if current_user.is_anonymous %}
+                        <div class="collapse navbar-collapse">
+                            <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                            </ul>
+                            <div class="d-flex">
+                                <a class="btn btn-outline-success" href="/signin">Авторизация</a>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </nav>
+        </header>
+
+        <main class="px-3">
+            {% block page_content %}{% endblock %}
+        </main>
+
+        <footer class="mt-auto text-white-50 bg-dark text-center">
+            <p class="mb-0 mt-3" >Создано для <a href="https://www.novsu.ru/dept/25137734/" target="_blank">Политехнического колледжа</a>, by <a href="https://vk.com/dradinc" target="_blank">@dradinc</a>.</p>
+            <p class="mb-0 pb-0">Великий Новгород © 2021</p>
+            <p class="text-end me-3 mb-2 mt-0 pt-0">Приложение: v0.0.1(dev)</p>
+        </footer>
+    </div>
+
+
+    <!-- Форма пользователя -->
+    <div class="modal fade" id="userInfo" tabindex="-1" aria-labelledby="exampleModalCenteredScrollableTitle" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userInfoTitle">Профиль</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form method="post">
+                        <div class="grid">
+
+                            <!-- userID -->
+                            <div class="row">
+                                <div class="col-4"><label for="userID"><b>ID:</b></label></div>
+                                <div class="col"><input type="text" class="disabled w-100 user-id form-control mb-2" readonly="readonly" name="userID" id="userID" value="{{current_user.id}}"></div>
+                            </div>
+
+                            <!-- Login -->
+                            <div class="row">
+                                <div class="col-4"><label for="edit_login"><b>Логин:</b></label></div>
+                                <div class="col"><input type="text" class="w-100 user-login form-control mb-2" name="edit_login" id="edit_login" value="{{current_user.login}}"></div>
+                            </div>
+
+                            <!-- Name -->
+                            <div class="row">
+                                <div class="col-4"><label class="h-100 w-100" for="edit_firstname"><b>Имя: </b></label></div>
+                                <div class="col"><input type="text" class="w-100 user-name form-control mb-2" name="edit_firstname" id="edit_firstname" value="{{current_user.firstname}}"></div>
+                            </div>
+
+                            <!-- LastName -->
+                            <div class="row">
+                                <div class="col-4"><label for="edit_lastname"><b>Фамилия: </b></label></div>
+                                <div class="col"><input type="text" class="w-100 user-lastname form-control mb-2" name="edit_lastname" id="edit_lastname" value="{{current_user.lastname}}"></div>
+                            </div>
+
+                            <!-- MiddleName -->
+                            <div class="row">
+                                <div class="col-4"><label for="edit_middlename"><b>Отчество: </b></label></div>
+                                <div class="col"><input type="text" class="w-100 user-middlename form-control mb-2" name="edit_middlename" id="edit_middlename" value="{{current_user.middlename}}"></div>
+                            </div>
+
+                            <!-- Role -->
+                            <!--
+                            <div class="row">
+                                <div class="col">
+                                    <select class="form-select mb-4 user-role" aria-label="Default select example" name="edit_role" id="edit_role">
+                                        <option value="0">Администратор</option>
+                                        <option value="1">Диспетчер-расписания</option>
+                                        <option value="2">Преподаватель</option>
+                                    </select>
+                                </div>
+                            </div>
+                            -->
+
+                            <!-- Buttons -->
+                            <div class="row">
+                                <div class="col">
+                                    <button type="submit" disabled="disabled" class="btn btn-outline-primary w-100 md-3" name="submit_user" value="edit_user">Изменить</button>
+                                </div>
+                                <div class="col">
+                                    <button type="submit" class="btn btn-outline-danger w-100 md-3" name="submit_user" value="del_user" disabled="disabled">Удалить</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

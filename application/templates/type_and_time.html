@@ -1,0 +1,254 @@
+{% extends 'template.html' %}
+
+{% block page_name %}
+    Типы и время активностей
+{% endblock %}
+
+{% block page_content %}
+
+    <div class="container">
+        <div class="row pt-4">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% if error %}
+                        <article class="alert alert-danger" role="alert">{{ messages[0] }}</article>
+                    {% else %}
+                        <article class="alert alert-success" role="alert">{{ messages[0] }}</article>
+                    {% endif %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Типы активности -->
+            <div class="col-sm mb-4">
+                <div class="row"><h3 class="text-center mb-3">Типы активности</h3></div>
+                <div class="list-group">
+
+                    <button class="mb-2 list-group-item list-group-item-action list-group-item-success w-100" data-bs-toggle="modal"
+                            data-bs-target="#activityType"
+                                data-bs-modal-title="Добавление типа"
+                                data-bs-id=""
+                                data-bs-title=""
+                                data-bs-button="add_type"
+                                data-bs-button-text="Добавить">
+                        <div class="row h-100 w-100 text-center"><h5>Добавить тип...</h5></div>
+                    </button>
+
+                    {% if activity_type %}
+                    {% for type in activity_type %}
+                    <button class="mb-2 list-group-item-action list-group-item-info w-100 alert alert-info"
+                            data-bs-toggle="modal"
+                            data-bs-target="#activityType"
+                                data-bs-modal-title="Изменение типа"
+                                data-bs-id="{{type.typeID}}"
+                                data-bs-title="{{type.title}}"
+                                data-bs-button="edit_type"
+                                data-bs-button-text="Изменить">
+                        <div class="row">
+                            <div class="col text-start"><h6><b>Наименование</b>: {{ type.title }} </h6></div>
+                            <div class="col-3 text-end"><h6> <b>ID</b>: {{ type.typeID }} </h6></div>
+                        </div>
+                    </button>
+                    {% endfor %}
+                    {% endif %}
+
+                </div>
+            </div>
+
+            <!-- Временные промежутки -->
+            <div class="col-sm mb-4 px-2">
+                <div class="row"><h3 class="text-center mb-3">Временные промежутки</h3></div>
+
+                <button class="mb-2 list-group-item list-group-item-action list-group-item-success w-100"
+                        data-bs-toggle="modal"
+                        data-bs-target="#Timeline"
+                            data-bs-modal-title="Добавление промежутка"
+                            data-bs-id=""
+                            data-bs-title=""
+                            data-bs-start=""
+                            data-bs-end=""
+                            data-bs-button="add_timeline"
+                            data-bs-button-text="Добавить">
+                    <div class="row h-100 w-100 text-center"><h5>Добавить промежуток...</h5></div>
+                </button>
+
+                {% if timeline %}
+                {% for time in timeline %}
+                <button class="mb-2 list-group-item-action list-group-item-info w-100 alert alert-info"
+                        data-bs-toggle="modal"
+                        data-bs-target="#Timeline"
+                            data-bs-modal-title="Изменение промежутка"
+                            data-bs-id="{{time.timelineID}}"
+                            data-bs-title="{{time.title}}"
+                            data-bs-start="{{time.start}}"
+                            data-bs-end="{{time.end}}"
+                            data-bs-button="edit_timeline"
+                            data-bs-button-text="Изменить">
+                    <div class="row">
+                        <div class="col text-start"><h6><b>Наименование</b>: {{ time.title }} </h6></div>
+                        <div class="col-3 text-end"><h6> <b>ID</b>: {{ time.timelineID }} </h6></div>
+                    </div>
+                    <div class="row">
+                        <div class="col text-start"><h6><b>Начало</b>: {{ time.start }} </h6></div>
+                        <div class="col text-start"><h6> <b>Конец</b>: {{ time.end }} </h6></div>
+                    </div>
+                </button>
+                {% endfor %}
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Типы активности (форма) -->
+    <div class="modal fade" id="activityType" tabindex="-1" aria-labelledby="exampleModalCenteredScrollableTitle" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenteredScrollableTitle"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body text-center">
+                    <div class="form-signin w-80">
+                        <form method="POST" class="grid w-80">
+
+                            <!-- typeID -->
+                            <div class="row">
+                                <div class="col-4 text-end"><label for="typeID"><b>ID:</b></label></div>
+                                <div class="col"><input type="text" class="disabled w-100 type-id form-control mb-2" readonly="readonly" name="typeID" id="typeID"></div>
+                            </div>
+
+                            <!-- Название -->
+                            <div class="row">
+                                <div class="col-4 text-end"><label for="type_title"><b>Наименование:</b></label></div>
+                                <div class="col"><input type="text" class="w-100 user-login form-control mb-2 type_title" name="type_title" id="type_title"></div>
+                            </div>
+
+                            <!-- Description
+                            <div class="row">
+                                <div class="col-4"><label class="h-100 w-100" for="edit_firstname"><b>Имя: </b></label></div>
+                                <div class="col"><input type="text" class="w-100 user-name form-control mb-2" name="edit_firstname" id="edit_firstname"></div>
+                            </div>-->
+
+                            <button class="w-100 btn btn-outline-success mb-0 form-modal-button" type="submit" name="submit_type_and_type" value="add_workshop"></button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Отмена</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script>
+        var activityTypeModal = document.getElementById('activityType')
+        activityTypeModal.addEventListener('show.bs.modal', function (event) {
+
+          var button = event.relatedTarget
+
+          var modal_title = button.getAttribute('data-bs-modal-title')
+          var type_id = button.getAttribute('data-bs-id')
+          var type_title = button.getAttribute('data-bs-title')
+          var modal_button = button.getAttribute('data-bs-button')
+          var modal_button_text = button.getAttribute('data-bs-button-text')
+
+          var modalTitle = activityTypeModal.querySelector('.modal-title')
+          var modalTypeID = activityTypeModal.querySelector('.type-id')
+          var modalTypeTitle = activityTypeModal.querySelector('.type_title')
+          var modalButton = activityTypeModal.querySelector('.form-modal-button')
+
+          modalTitle.textContent = modal_title
+          modalTypeID.value = type_id
+          modalTypeTitle.value = type_title
+          modalButton.value = modal_button
+          modalButton.textContent = modal_button_text
+        })
+    </script>
+
+
+    <!-- Временные промежутки (форма) -->
+    <div class="modal fade" id="Timeline" tabindex="-1" aria-labelledby="exampleModalCenteredScrollableTitle" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="title"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body text-center">
+                    <div class="form-signin w-80">
+                        <form method="POST" class="grid w-80">
+
+                            <!-- timelineID -->
+                            <div class="row">
+                                <div class="col-4 text-end"><label for="timelineID"><b>ID:</b></label></div>
+                                <div class="col"><input type="text" class="disabled w-100 timelineID form-control mb-2" readonly="readonly" name="timelineID" id="timelineID"></div>
+                            </div>
+
+                            <!-- Название -->
+                            <div class="row">
+                                <div class="col-4 text-end"><label for="timeline_title"><b>Наименование:</b></label></div>
+                                <div class="col"><input type="text" class="w-100 user-login form-control mb-2 timeline_title" name="timeline_title" id="timeline_title"></div>
+                            </div>
+
+                            <!-- Начало -->
+                            <div class="row">
+                                <div class="col-4 text-end"><label for="timeline_start"><b>Начало:</b></label></div>
+                                <div class="col"><input type="time" class="w-100 user-login form-control mb-2 timeline_start" name="timeline_start" id="timeline_start"></div>
+                            </div>
+
+                            <!-- Окончание -->
+                            <div class="row mb-4">
+                                <div class="col-4 text-end"><label for="timeline_end"><b>Конец:</b></label></div>
+                                <div class="col"><input type="time" class="w-100 user-login form-control mb-2 timeline_end" name="timeline_end" id="timeline_end"></div>
+                            </div>
+
+                            <button class="w-100 btn btn-outline-success mb-0 form-modal-button" type="submit" name="submit_type_and_type" value="add_workshop"></button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Отмена</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script>
+        var TimelineModal = document.getElementById('Timeline')
+        TimelineModal.addEventListener('show.bs.modal', function (event) {
+
+          var button = event.relatedTarget
+
+          var modal_title = button.getAttribute('data-bs-modal-title')
+          var timeline_id = button.getAttribute('data-bs-id')
+          var timeline_title = button.getAttribute('data-bs-title')
+          var timeline_start = button.getAttribute('data-bs-start')
+          var timeline_end = button.getAttribute('data-bs-end')
+          var modal_button = button.getAttribute('data-bs-button')
+          var modal_button_text = button.getAttribute('data-bs-button-text')
+
+          var modalTitle = TimelineModal.querySelector('.modal-title')
+          var modalTimelineID = TimelineModal.querySelector('.timelineID')
+          var modalTimelineTitle = TimelineModal.querySelector('.timeline_title')
+          var modalTimelineStart = TimelineModal.querySelector('.timeline_start')
+          var modalTimelineEnd = TimelineModal.querySelector('.timeline_end')
+          var modalButton = TimelineModal.querySelector('.form-modal-button')
+
+          modalTitle.textContent = modal_title
+          modalTimelineID.value = timeline_id
+          modalTimelineTitle.value = timeline_title
+          modalTimelineStart.value = timeline_start
+          modalTimelineEnd.value = timeline_end
+          modalButton.value = modal_button
+          modalButton.textContent = modal_button_text
+        })
+    </script>
+
+{% endblock %}

@@ -1,0 +1,363 @@
+{% extends 'template.html' %}
+
+{% block page_name %}
+    Мастерские ПТК
+{% endblock %}
+
+{% block page_content %}
+    <div class="d-flex w-100 h-100 p-3">
+        <div class="px-3 w-100">
+
+            <h1 class="text-center mb-5">Мастерские ПТК</h1>
+
+            {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% if status=='Unknown_error' %}
+                                <article class="alert alert-danger" role="alert">{{ messages[0] }}</article>
+                            {% endif %}
+                        {% endif %}
+            {% endwith %}
+
+            <div class="list-group">
+                {% if current_user.role == 0 %}
+
+                    <button class="mb-2 list-group-item list-group-item-action list-group-item-success w-100"
+                            data-bs-toggle="modal"
+                            data-bs-target="#addNewWorkshop">
+                        <div class="row h-100 w-100 text-center"><h4>Добавить мастерскую...</h4></div>
+                    </button>
+
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% if status=='add_workshop' %}
+                                {% if error %}
+                                    <button class="mb-3 list-group-item list-group-item-action list-group-item-danger"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#addNewWorkshop"
+                                                data-bs-number="{{new_workshop.number}}"
+                                                data-bs-title="{{new_workshop.title}}"
+                                                data-bs-owner="{{new_workshop.owner}}"
+                                                data-bs-count_seats="{{new_workshop.count_seats}}">
+                                        <div class="row">
+                                            <div class="col text-start"><h5> <b>Добавление мастерской</b></h5></div>
+                                        </div>
+                                        <div class="text-start px-0">
+                                            <div class="col"><b>Ошибка</b>: {{ messages[0] }}</div>
+                                        </div>
+                                    </button>
+                                {% else %}
+                                    <button class="list-group-item list-group-item-action list-group-item-success"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#workshopInfo"
+                                                data-bs-number="{{new_workshop.number}}"
+                                                data-bs-title="{{new_workshop.title}}"
+                                                data-bs-owner="{{new_workshop.owner}}"
+                                                data-bs-count_seats="{{new_workshop.count_seats}}">
+                                        <div class="row">
+                                            <div class="col text-start"><h5> <b>Добавление мастерской</b> </h5></div>
+                                        </div>
+                                        <div class="text-end px-0">
+                                            <div class="col">{{ messages[0] }}</div>
+                                        </div>
+                                    </button>
+                                {%  endif %}
+                            {% elif status=='edit_workshop' %}
+                                {% if error %}
+                                    <button class="mb=3 list-group-item list-group-item-action list-group-item-danger"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#workshopInfo"
+                                                data-bs-number="{{new_workshop.number}}"
+                                                data-bs-title="{{new_workshop.title}}"
+                                                data-bs-owner="{{new_workshop.owner}}"
+                                                data-bs-count_seats="{{new_workshop.count_seats}}">
+                                        {{ messages[0] }}
+                                    </button>
+                                {% else %}
+                                    <button class="mb-3 list-group-item list-group-item-action list-group-item-success"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#workshopInfo"
+                                                data-bs-number="{{new_workshop.number}}"
+                                                data-bs-title="{{new_workshop.title}}"
+                                                data-bs-owner="{{new_workshop.owner}}"
+                                                data-bs-count_seats="{{new_workshop.count_seats}}">
+                                        {{ messages[0] }}
+                                    </button>
+                                {%  endif %}
+                            {% endif %}
+                        {% endif %}
+                    {% endwith %}
+                {% endif %}
+                {% for workshop in workshop_all_list %}
+                    <button class="mb-2 list-group-item-action list-group-item-info w-100 alert alert-info"
+                            data-bs-toggle="modal"
+                            data-bs-target="#workshopInfo"
+                                data-bs-number="{{workshop.number}}"
+                                data-bs-title="{{workshop.title}}"
+                                data-bs-description="{{workshop.description}}"
+                                data-bs-owner="{{workshop.owner.id}}"
+                                data-bs-count_seats="{{ workshop.count_seats }}">
+                        <div class="row">
+                            <div class="col text-start"><h5> <b>{{ workshop.title }}</b> </h5></div>
+                            <div class="col-3 text-end"><h6> <b>Кабинет</b>: {{ workshop.number }} </h6></div>
+                        </div>
+                        <div class="row">
+                            <div class="col">Количество мест: {{ workshop.count_seats }}</div>
+                            <div class="col text-end"><b>Зведующий</b>: {{ workshop.owner.lastname }} {{ workshop.owner.firstname }} {{ workshop.owner.middlename }}</div>
+                        </div>
+                    </button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Форма добавления мастерской -->
+    <div class="modal fade" id="addNewWorkshop" tabindex="-1" aria-labelledby="exampleModalCenteredScrollableTitle" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenteredScrollableTitle">Добавление мастерской</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body text-center">
+                    <div class="form-signin w-80">
+                        <form method="POST" class="grid w-80">
+
+                            <!-- Кабинет -->
+                            <div class="row">
+                                <div class="col-4"><label for="add_number"><b>Кабинет:</b></label></div>
+                                <div class="col"><input type="text" class="disabled w-100 user-id form-control mb-2 workshop-number" name="add_number" id="add_number"></div>
+                            </div>
+
+                            <!-- Название -->
+                            <div class="row">
+                                <div class="col-4"><label for="add_title"><b>Название:</b></label></div>
+                                <div class="col"><textarea type="text" class="w-100 user-login form-control mb-2 workshop-title" name="add_title" id="add_title" style="resize: None;"></textarea></div>
+                            </div>
+
+                            <!-- Количество мест -->
+                            <div class="row">
+                                <div class="col-4"><label for="add_count_seats"><b>Количество мест:</b></label></div>
+                                <div class="col"><input type="text" class="w-100 user-login form-control mb-2 workshop-count_seats" name="add_count_seats" id="add_count_seats"></div>
+                            </div>
+
+                            <!-- Description
+                            <div class="row">
+                                <div class="col-4"><label class="h-100 w-100" for="edit_firstname"><b>Имя: </b></label></div>
+                                <div class="col"><input type="text" class="w-100 user-name form-control mb-2" name="edit_firstname" id="edit_firstname"></div>
+                            </div>-->
+
+                            <!-- Заведующий -->
+                            <div class="row">
+                                <div class="col-4"><label><b>Заведущий:</b></label></div>
+                                <div class="col">
+                                    <select class="form-select mb-4 user-role workshop-owner" aria-label="Default select example" name="add_owner" id="add_owner">
+                                        <option value="0"></option>
+                                        {% for owner in list_for_owner %}
+                                            <option value="{{ owner.id }}">
+                                                {{ owner.lastname }}
+                                                {{ owner.firstname }}
+                                                {{ owner.middlename }}
+                                                ({% if owner.role == 0 %}
+                                                    Администратор
+                                                {% elif owner.role == 1 %}
+                                                    Диспетчер-расписания
+                                                {% elif owner.role == 2 %}
+                                                    Преподаватель
+                                                {% endif %})
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button class="w-100 btn btn-outline-success mb-0" type="submit" name="submit_workshop" value="add_workshop">Добавить</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Отмена</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script>
+        var addNewWorkshopModal = document.getElementById('addNewWorkshop')
+        addNewWorkshopModal.addEventListener('show.bs.modal', function (event) {
+
+          var button = event.relatedTarget
+
+          var number = button.getAttribute('data-bs-number')
+          var title = button.getAttribute('data-bs-title')
+          var owner = button.getAttribute('data-bs-owner')
+          var count_seats = button.getAttribute('data-bs-count_seats')
+
+          var modalWorkshopNumber = addNewWorkshopModal.querySelector('.workshop-number')
+          var modalWorkshopTitle = addNewWorkshopModal.querySelector('.workshop-title')
+          var modalWorkshopOwner = addNewWorkshopModal.querySelector('.workshop-owner')
+          var modalWorkshopCount_Seats = addNewWorkshopModal.querySelector('.workshop-count_seats')
+
+          modalWorkshopNumber.value = number
+          modalWorkshopTitle.value = title
+          modalWorkshopOwner.value = owner
+          modalWorkshopCount_Seats.value = count_seats
+        })
+    </script>
+
+
+    <!-- Форма информа -->
+    <div class="modal fade" id="workshopInfo" tabindex="-1" aria-labelledby="exampleModalCenteredScrollableTitle" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userInfoTitle">Мастерская</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form method="post">
+                        <div class="grid">
+
+                            <!-- Для того, если изменится номер -->
+                            <input class="invisible workshop-now_number" name="now_number" id="now_number">
+
+                            <!-- Кабинет -->
+                            <div class="row">
+                                <div class="col-4"><label for="number"><b>Кабинет:</b></label></div>
+                                <div class="col"><input type="text" class="disabled w-100 user-id form-control mb-2 workshop-number" name="number" id="number"></div>
+                            </div>
+
+                            <!-- Название -->
+                            <div class="row">
+                                <div class="col-4"><label for="title"><b>Название:</b></label></div>
+                                <div class="col"><textarea type="text" class="w-100 user-login form-control mb-2 workshop-title" name="title" id="title" style="resize: None;"></textarea></div>
+                            </div>
+
+                            <!-- Количество мест -->
+                            <div class="row">
+                                <div class="col-4"><label for="count_seats"><b>Количество мест:</b></label></div>
+                                <div class="col"><input type="text" class="w-100 user-login form-control mb-2 workshop-count_seats" name="count_seats" id="count_seats"></div>
+                            </div>
+
+                            <!-- Description
+                            <div class="row">
+                                <div class="col-4"><label class="h-100 w-100" for="edit_firstname"><b>Имя: </b></label></div>
+                                <div class="col"><input type="text" class="w-100 user-name form-control mb-2" name="edit_firstname" id="edit_firstname"></div>
+                            </div>-->
+
+                            {% if current_user.role == 0 %}
+                            <!-- Заведующий -->
+                            <div class="row">
+                                <div class="col-4"><label><b>Заведущий:</b></label></div>
+                                <div class="col">
+                                    <select class="form-select mb-4 user-role workshop-owner" aria-label="Default select example" name="owner" id="owner">
+                                        <option value="0"></option>
+                                        {% for owner in list_for_owner %}
+                                            <option value="{{ owner.id }}">
+                                                {{ owner.lastname }}
+                                                {{ owner.firstname }}
+                                                {{ owner.middlename }}
+                                                ({% if owner.role == 0 %}
+                                                    Администратор
+                                                {% elif owner.role == 1 %}
+                                                    Диспетчер-расписания
+                                                {% elif owner.role == 2 %}
+                                                    Преподаватель
+                                                {% endif %})
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            {% else %}
+                            <!-- Заведующий -->
+                            <div class="row">
+                                <div class="col-4"><label><b>Заведущий:</b></label></div>
+                                <div class="col">
+                                    <select class="form-select mb-4 user-role workshop-owner" aria-label="Default select example" disabled="disabled" name="view_owner" id="view_owner">
+                                        <option value="0"></option>
+                                        {% for owner in list_for_owner %}
+                                            <option value="{{ owner.id }}">
+                                                {{ owner.lastname }}
+                                                {{ owner.firstname }}
+                                                {{ owner.middlename }}
+                                                ({% if owner.role == 0 %}
+                                                    Администратор
+                                                {% elif owner.role == 1 %}
+                                                    Диспетчер-расписания
+                                                {% elif owner.role == 2 %}
+                                                    Преподаватель
+                                                {% endif %})
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if current_user.role == 0 %}
+                            <!-- Buttons -->
+                                <div class="row">
+                                    <div class="col">
+                                        <button type="submit" class="btn btn-outline-primary w-100 md-3" name="submit_workshop" value="edit_workshop">Изменить</button>
+                                    </div>
+                                    <div class="col">
+                                        <button type="submit" class="btn btn-outline-danger w-100 md-3" name="submit_workshop" value="del_workshop" disabled="disabled">Удалить</button>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <div class="row mt-4 mb-2">
+                                <div class="col">
+                                    <button type="submit" class="btn btn-outline-info w-100 md-3 activity_button" name="submit_workshop" value="open_activity">Просмотр расписания</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script>
+        var userInfoModal = document.getElementById('workshopInfo')
+        userInfoModal.addEventListener('show.bs.modal', function (event) {
+
+          var button = event.relatedTarget
+
+          var now_number = button.getAttribute('data-bs-number')
+          var number = button.getAttribute('data-bs-number')
+          var title = button.getAttribute('data-bs-title')
+          var owner = button.getAttribute('data-bs-owner')
+          var count_seats = button.getAttribute('data-bs-count_seats')
+
+          var modalWorkshopNowNumber = userInfoModal.querySelector('.workshop-now_number')
+          var modalWorkshopNumber = userInfoModal.querySelector('.workshop-number')
+          var modalWorkshopTitle = userInfoModal.querySelector('.workshop-title')
+          var modalWorkshopOwner = userInfoModal.querySelector('.workshop-owner')
+          var modalWorkshopCount_Seats = userInfoModal.querySelector('.workshop-count_seats')
+
+          {% if current_user.is_anonymous %}
+                modalWorkshopNowNumber.readonly = true
+                modalWorkshopNumber.disabled = true
+                modalWorkshopTitle.disabled = true
+                modalWorkshopOwner.disabled = true
+                modalWorkshopCount_Seats.disabled = true
+            {% endif %}
+
+          modalWorkshopNowNumber.value = now_number
+          modalWorkshopNumber.value = number
+          modalWorkshopTitle.value = title
+          modalWorkshopOwner.value = owner
+          modalWorkshopCount_Seats.value = count_seats
+        })
+    </script>
+{% endblock %}

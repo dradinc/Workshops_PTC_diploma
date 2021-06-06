@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Авторизация</title>
+
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+
+    <style>
+        html, body {
+            display: grid;
+            height: 100%;
+            background-color: #DCDCDC;
+        }
+        body {
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="text-center">
+        <main class="form-signin">
+            <form method="POST">
+                <img class="mb-4" src="{{ url_for('static', filename='image/icon.png') }}" alt="" width="85" height="85">
+                <h1 class="h3 mb-3 fw-normal">Авторизация</h1>
+                <label for="login" class="visually-hidden">Login or E-mail</label>
+                <input type="text" id="login" name="login" class="form-control mb-2" placeholder="Логин" autofocus="">
+                <label for="password" class="visually-hidden">Password</label>
+                <input type="password" id="password" name="password"class="form-control mb-2" placeholder="Пароль">
+                <!--<div class="checkbox mb-3">
+                    <label>
+                    <input type="checkbox" value="remember-me"> Remember me
+                    </label>
+                </div>-->
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <article class="alert alert-danger" role="alert">{{ messages[0] }}</article>
+                    {% endif %}
+                {% endwith %}
+                <button class="w-100 btn btn-lg btn-primary mb-2" type="submit">Вход</button>
+                <p class="mt-5 mb-3 text-muted">Великий Новгород © 2021</p>
+            </form>
+        </main>
+</body>
+</html>
