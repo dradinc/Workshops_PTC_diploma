@@ -1,5 +1,5 @@
 # Импорт установленных модулей и библиотек
-from flask import Flask, redirect
+from flask import Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 
