@@ -2,13 +2,13 @@
 #server = '127.0.0.1:3306'
 #login = 'root'
 #password = 'root'
-#db_name = 'workshops_ptc'
+#db_name = 'workshops_dev' #'workshops_ptc'
 
 # Для удалённого
-server = '109.95.210.183'
-login = 'u108692_application'
-password = '8Dr-Ytd-Diz-arJ'
-db_name = 'u108692_workshops_ptc'
+server = 'j5zntocs2dn6c3fj.chr7pe7iynqr.eu-west-1.rds.amazonaws.com:3306'
+login = 'vlgfj1uq4cd9bh17'
+password = 'm6x73pzfy7jkw1e4'
+db_name = 'ng3ltq1ftea03f4d'
 
 
 class Config:
