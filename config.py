@@ -19,3 +19,11 @@ class Config:
                               + password\
                               + '@' + server\
                               + '/' + db_name + ''
+
+    MAIL_SERVER = 'smtp.yandex.ru'
+    MAIL_PORT = 465
+    MAIL_USE_TLS = False
+    MAIL_USE_SSL = True
+    MAIL_USERNAME = 'artyom.dubogrej@yandex.ru'
+    MAIL_DEFAULT_SENDER = 'artyom.dubogrej@yandex.ru'
+    MAIL_PASSWORD = 'chwwsayfpfhxbyfi'

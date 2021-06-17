@@ -1,0 +1,215 @@
+{% extends 'template.html' %}
+
+{% block page_name %}
+    Активности
+{% endblock %}
+
+{% block page_content %}
+
+    <div class="d-flex w-100 h-100 p-3">
+        <div class="px-3 w-100">
+
+
+            <!-- "Заголовок" страницы -->
+            <h1 class="text-center mt-2">Расписание активностей: ({{number}}) {{workshop_page_dict.title}}</h1>
+
+            <!-- Текущая неделя и переключение между неделями -->
+            <div class="container">
+                <form class="my-4" method="post">
+                    <div class="row my-1"><div class="col"></div><div class="col text-center"><h5>Неделя</h5></div><div class="col"></div></div>
+                    <div class="row my-0">
+                        <div class="col text-end p-0"><button class="btn btn-outline-secondary pt-1 pb-2  px-2" type="submit" name="workshop_activity_submit" value="last_week"> << </button></div>
+                        <div class="col-auto text-center pt-1"><h5>{{week_days[0].day}} - {{week_days[6].day}}</h5></div>
+                        <div class="col text-start p-0"><button class="btn btn-outline-secondary pt-1 pb-2 px-2" type="submit" name="workshop_activity_submit" value="next_week"> >> </button></div>
+                    </div>
+                </form>
+                {% for msg in get_flashed_messages() %}
+                    <div class="alert alert-success">{{msg}}</div>
+                {% endfor %}
+            </div>
+
+            <!-- Отображение расписания -->
+            <section class="container mt-3">
+                <article class="row">
+                    {% for week_day in week_days %}
+                        <article class="col-lg-4 col-xs-12 my-3">
+                            <!-- День недели и дата -->
+                            <h5>
+                                {% if loop.index == 1 %} Понедельник
+                                {% elif loop.index == 2 %} Вторник
+                                {% elif loop.index == 3 %} Среда
+                                {% elif loop.index == 4 %} Четверг
+                                {% elif loop.index == 5 %} Пятница
+                                {% elif loop.index == 6 %} Суббота
+                                {% elif loop.index == 7 %} Воскресенье
+                                {% endif %}
+                                 {{ week_days[loop.index-1].day }}
+                            </h5>
+                            <!-- Добавление активности -->
+                            {% if current_user.role == 0 or current_user.role == 1 %}
+                                <a href="?year={{year_number}}&week={{week_number}}&day={{loop.index-1}}&activity=new" class="my-1 list-group-item list-group-item-action list-group-item-success">
+                                    <div class="row px-0 mx-0 text-center"><h6>Добавить активность...</h6></div>
+                                </a>
+                            {% endif %}
+                            <!-- Активности на день -->
+                            {% if week_days[loop.index-1].activity|length > 0 %}
+                                {% set outer_loop = loop %}
+                                {% for activity in week_days[loop.index-1].activity %}
+                                    {% if current_user.role == 0 or  current_user.role == 1 %}
+                                        <!-- Для пользователей, которые могут редактировать активности -->
+                                        {% if activity.status == None %}
+                                            <a href="?year={{year_number}}&week={{week_number}}&day={{outer_loop.index-1}}&activity={{activity.activityID}}" class="my-1 list-group-item list-group-item-action list-group-item-warning border border-warning border-2">
+                                                <div class="row">
+                                                    <div class="row px-0 mx-0">
+                                                        <div class="col text-start mx-1 px-1"><h6><b>{{activity.title}}</b></h6></div>
+                                                    </div>
+                                                    <div class="row px-0 mx-0 mt-1 mb-2">
+                                                        <div class="col text-start mx-1 px-1"><b>{{activity.time.title}}</b>: {{activity.time.start}}-{{activity.time.end}}</div>
+                                                        <div class="col-4 text-end mx-1 px-1"><b>{{activity.type.title}}</b></div>
+                                                    </div>
+                                                    <div class="row px-0 mx-0">
+                                                        <div class="col text-end mx-1 px-1"><b>Ведущий</b>: {{activity.owner.lastname}} {{activity.owner.firstname[:1]}}.{{activity.owner.middlename[:1]}}.</div>
+                                                    </div>
+                                                    <div class="row px-0 mx-0">
+                                                        <div class="col text-start mx-1 px-1">
+                                                            {% if activity.booking%}
+                                                                <p class="my-0">Можно забронировать место</p>
+                                                                <p class="my-0">Свободных мест: {{activity.workshop.count_seats - activity.count_seats}}</p>
+                                                            {% else %}
+                                                                Нельзя забронировать место
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        {% elif activity.status == True %}
+                                            <a href="?year={{year_number}}&week={{week_number}}&day={{outer_loop.index-1}}&activity={{activity.activityID}}" class="my-1 list-group-item list-group-item-action list-group-item-info border border-primary border-2">
+                                                <div class="row">
+                                                    <div class="row px-0 mx-0">
+                                                        <div class="col text-start mx-1 px-1"><h6><b>{{activity.title}}</b></h6></div>
+                                                    </div>
+                                                    <div class="row px-0 mx-0 mt-1 mb-2">
+                                                        <div class="col text-start mx-1 px-1"><b>{{activity.time.title}}</b>: {{activity.time.start}}-{{activity.time.end}}</div>
+                                                        <div class="col-4 text-end mx-1 px-1"><b>{{activity.type.title}}</b></div>
+                                                    </div>
+                                                    <div class="row px-0 mx-0">
+                                                        <div class="col text-end mx-1 px-1"><b>Ведущий</b>: {{activity.owner.lastname}} {{activity.owner.firstname[:1]}}.{{activity.owner.middlename[:1]}}.</div>
+                                                    </div>
+                                                    <div class="row px-0 mx-0">
+                                                        <div class="col text-start mx-1 px-1">
+                                                            {% if activity.booking%}
+                                                                <p class="my-0">Можно забронировать место</p>
+                                                                <p class="my-0">Свободных мест: {{activity.workshop.count_seats - activity.count_seats}}</p>
+                                                            {% else %}
+                                                                Нельзя забронировать место
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        {% elif activity.status == False %}
+                                            <a href="?year={{year_number}}&week={{week_number}}&day={{outer_loop.index-1}}&activity={{activity.activityID}}" class="my-1 list-group-item list-group-item-action list-group-item-danger border border-danger border-2">
+                                                <div class="row">
+                                                    <div class="row px-0 mx-0">
+                                                        <div class="col text-start mx-1 px-1"><h6><b>{{activity.title}}</b></h6></div>
+                                                    </div>
+                                                    <div class="row px-0 mx-0 mt-1 mb-2">
+                                                        <div class="col text-start mx-1 px-1"><b>{{activity.time.title}}</b>: {{activity.time.start}}-{{activity.time.end}}</div>
+                                                        <div class="col-4 text-end mx-1 px-1"><b>{{activity.type.title}}</b></div>
+                                                    </div>
+                                                    <div class="row px-0 mx-0">
+                                                        <div class="col text-end mx-1 px-1"><b>Ведущий</b>: {{activity.owner.lastname}} {{activity.owner.firstname[:1]}}.{{activity.owner.middlename[:1]}}.</div>
+                                                    </div>
+                                                    <div class="row px-0 mx-0">
+                                                        <div class="col text-start mx-1 px-1">
+                                                            {% if activity.booking == True%}
+                                                                <p class="my-0">Можно забронировать место</p>
+                                                                <p class="my-0">Свободных мест: {{activity.workshop.count_seats - activity.count_seats}}</p>
+                                                            {% else %}
+                                                                Нельзя забронировать место
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        {% endif %}
+                                    {% else %}
+                                        <!-- Для пользователей не имеющие права на редактирование (Для оставления заявок) -->
+                                        {% if activity.status == True %}
+                                            {% if activity.booking %}
+                                                <a href="?year={{year_number}}&week={{week_number}}&day={{outer_loop.index-1}}&activity={{activity.activityID}}&booking=new_booking" class="my-1 list-group-item list-group-item-action list-group-item-info border border-primary border-2">
+                                                    <div class="row">
+                                                        <div class="row px-0 mx-0">
+                                                            <div class="col text-start mx-1 px-1"><h6><b>{{activity.title}}</b></h6></div>
+                                                        </div>
+                                                        <div class="row px-0 mx-0 mt-1 mb-2">
+                                                            <div class="col text-start mx-1 px-1"><b>{{activity.time.title}}</b>: {{activity.time.start}}-{{activity.time.end}}</div>
+                                                            <div class="col-4 text-end mx-1 px-1"><b>{{activity.type.title}}</b></div>
+                                                        </div>
+                                                        <div class="row px-0 mx-0">
+                                                            <div class="col text-end mx-1 px-1"><b>Ведущий</b>: {{activity.owner.lastname}} {{activity.owner.firstname[:1]}}.{{activity.owner.middlename[:1]}}.</div>
+                                                        </div>
+                                                        <div class="col text-start mx-1 px-1">
+                                                            <p class="my-0">Можно забронировать место</p>
+                                                            <p class="my-0">Свободных мест: {{activity.workshop.count_seats - activity.count_seats}}</p>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            {% else %}
+                                                <section class="alert alert-info border border-primary list-group-item-info border-2 my-1">
+                                                    <div class="row">
+                                                        <div class="row px-0 mx-0">
+                                                            <div class="col text-start mx-1 px-1"><h6><b>{{activity.title}}</b></h6></div>
+                                                        </div>
+                                                        <div class="row px-0 mx-0 mt-1 mb-2">
+                                                            <div class="col text-start mx-1 px-1"><b>{{activity.time.title}}</b>: {{activity.time.start}}-{{activity.time.end}}</div>
+                                                            <div class="col-4 text-end mx-1 px-1"><b>{{activity.type.title}}</b></div>
+                                                        </div>
+                                                        <div class="row px-0 mx-0">
+                                                            <div class="col text-end mx-1 px-1"><b>Ведущий</b>: {{activity.owner.lastname}} {{activity.owner.firstname[:1]}}.{{activity.owner.middlename[:1]}}.</div>
+                                                        </div>
+                                                        <div class="col text-start mx-1 px-1">Нельзя забронировать место</div>
+                                                    </div>
+                                                </section>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <h6>На этот день активностей нет</h6>
+                            {% endif %}
+                        </article>
+                    {% endfor %}
+                </article>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Модальное окно для записи на активность -->
+    <div class="modal fade" id="BookingForm" tabindex="-1" aria-labelledby="exampleModalCenteredScrollableTitle" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="title">Заявка на бронирования места</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body text-center">
+                    <div class="form-signin w-80">
+                        <form method="POST" class="grid w-80">
+
+                        </form>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

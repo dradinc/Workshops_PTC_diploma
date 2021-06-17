@@ -1,0 +1,273 @@
+{% extends 'template.html' %}
+
+{% block page_name %}
+    {% if status == 'edit'%}
+        Изменение активности
+    {% else %}
+    {% endif %}
+{% endblock %}
+
+{% block page_content %}
+    <div class="d-flex w-100 h-100 p-3">
+        <div class="px-3 w-100">
+
+            <!-- Данные выбранной активности -->
+            <form class="container" method="post">
+                <!-- "Заголовок" страницы -->
+                <h2 class="h3 mb-4 fw-normal text-center">{{activity.title}}</h2>
+
+                {% for msg in get_flashed_messages() %}
+                    <div class="alert alert-danger">{{msg}}</div>
+                {% endfor %}
+
+                <!-- Наименование активности (поле) -->
+                <section class="row my-1 form-floating">
+                    <input class="form-control" name="input_title" id="input_title">
+                    <label for="input_title">Наименование</label>
+                </section>
+
+                <!-- Мастерская -->
+                <section class="row my-1 form-floating">
+                    <select class="form-select activity_workshop" name="select_workshop" id="select_workshop">
+                        {% for workshop in workshops %}
+                        <option value="{{ workshop.number }}">
+                            {{ workshop.number }}-{{ workshop.title }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <label for="select_workshop">Мастерская</label>
+                </section>
+
+                <!-- Ведущий -->
+                <section class="row my-1 form-floating">
+                    <select class="form-select" name="select_owner" id="select_owner">
+                        <option value="0"></option>
+                        {% for owner_item in owners %}
+                            {% if not owner_item.role == 1 %}
+                                <option value="{{ owner_item.id }}">
+                                    {{ owner_item.lastname }} {{ owner_item.firstname }} {{ owner_item.middlename }}
+                                </option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <label for="select_owner">Ведущий</label>
+                </section>
+
+                <!-- Дата, временной промежуток и тип активности -->
+                <section class="row my-1">
+
+                    <!-- Дата активности -->
+                    <section class="col-xs-12 col-md-4 mx-0 my-1 form-floating">
+                        <input type="date" class="form-control" name="input_date" id="input_date" readonly="readonly">
+                        <label for="input_date" class="ps-4">Дата</label>
+                    </section>
+
+                    <!-- Временной промежуток -->
+                    <section class="col-xs-12 col-md-4 mx-0 my-1 form-floating">
+                        <select class="form-select" name="select_time" id="select_time">
+                            {% for time in timeline %}
+                            <option value="{{ time.timelineID }}">
+                                {{ time.title }} ({{ time.start }}-{{ time.end }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <label for="select_time" class="ps-4">Время</label>
+                    </section>
+
+                    <!-- Тип автикности -->
+                    <section class="col-xs-12 col-md-4 mx-0 my-1 form-floating">
+                        <select class="form-select" name="select_type" id="select_type">
+                            {% for type in activity_type %}
+                            <option value="{{ type.typeID }}">
+                                {{ type.title }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <label for="select_type" class="ps-4">Тип</label>
+                    </section>
+
+                </section>
+
+                <!-- Кол-во необходимых мест, статус и бронирование -->
+                <section class="row my-1">
+                    <!-- Кол-во необходимых мест -->
+                    <section class="col-xs-6 col-md-4 mx-0 my-1 form-floating">
+                        <input class="form-control" name="input_count_seats" id="input_count_seats">
+                        <label for="input_count_seats" class="ps-4">Необходимо мест</label>
+                    </section>
+
+                    <!-- Статус -->
+                    <section class="col-xs-6 col-md-4 mx-0 my-3 justify-content-center d-flex">
+                            <input type="radio" class="btn-check" name="check_status" id="status-success" value=1 autocomplete="off">
+                            <label class="btn btn-outline-success mx-1 w-100" for="status-success" value=1>Разрешено</label>
+
+                            <input type="radio" class="btn-check" name="check_status" id="status-danger" value=0 autocomplete="off">
+                            <label class="btn btn-outline-danger mx-1 w-100" for="status-danger" value=0>Запрещено</label>
+                    </section>
+
+                    <!-- Бронирование -->
+                    <section class="col-xs-6 col-md-4 my-4 form-check form-switch justify-content-center d-flex">
+                        <input class="form-check-input" type="checkbox" name="booking_status" id="booking_status">
+                        <label class="form-check-label px-2" for="booking_status">Бронирование мест</label>
+                    </section>
+                </section>
+
+                <!-- Сбросить статус активности -->
+                <section class="row my-1">
+                    <section class="col-xs-6 col-md-4 mx-0 my-0 form-floating">
+                    </section>
+
+                    <!-- Статус -->
+                    <section class="col-xs-6 col-md-4 mx-0 my-0 justify-content-center d-flex">
+                        <button type="button" class="btn btn-outline-secondary w-100" title="Сбросить разрешение" data-bs-target="#ResetStatus" id="reset_status">Сбросить</button>
+                    </section>
+
+                    <section class="col-xs-6 col-md-4 my-0 form-check form-switch justify-content-center d-flex">
+                    </section>
+                </section>
+
+                <!-- Кнопки: Добавить/Изменить, удалить и дублировать -->
+                <section class="row mt-5">
+                    <!-- Добавить/Изменить -->
+                    <section class="col-xs-6 col-md-4 mx-0 my-0 justify-content-center d-flex">
+                        <button type="submit" class="btn btn-outline-success w-100 btn-add-edit-act" name="workshop_activity_submit" value="edit_activity">Изменить</button>
+                    </section>
+
+                    <!-- Удалить -->
+                    <section class="col-xs-6 col-md-4 mx-0 my-0 justify-content-center d-flex">
+                        <button type="submit" class="btn btn-outline-danger w-100 btn-del-act" name="workshop_activity_submit" value="del_activity">Удалить</button>
+                    </section>
+
+                    <!-- Дублировать -->
+                    <section class="col-xs-6 col-md-4 mx-0 my-0 justify-content-center d-flex">
+                        <button type="submit" class="btn btn-outline-dark w-100 btn-del-act" name="workshop_activity_submit" value="duplicate_activity">Дублировать</button>
+                    </section>
+                </section>
+
+            </form>
+
+            {% if booking_list %}
+                <h2 class="h3 mb-1  mt-5 fw-normal text-start">Заявки</h2>
+                <section class="container">
+                    {% for booking_item in booking_list %}
+                        {% if booking_item.status == None %}
+                            <section class="row my-1 list-group-item list-group-item-warning border border-warning border-2">
+                                <section class="row px-0 mx-0">
+                                    <section class="col text-start mx-1 px-1"><b>{{booking_item.lastname}} {{booking_item.firstname}} {{booking_item.middlename}}</b></section>
+                                    <section class="col text-end mx-1 px-1"><b>Группа</b>: {{booking_item.group}}</section>
+                                </section>
+                                <section class="row px-0 mx-0">
+                                    <section class="col text-start mx-1 px-1"><b>E-mail</b>: {{booking_item.email}}</section>
+                                    <section class="col mx-1 px-1">
+                                        <section class="row my-1 text-end px-0 mx-0">
+                                            <section class="col mx-1 px-1">
+                                                <a href="?year={{request.args.get('year')}}&week={{request.args.get('week')}}&day={{request.args.get('day')}}&activity={{request.args.get('activity')}}&status=True&booking={{booking_item.bookingID}}" class="btn btn-success">Принять</a>
+                                            </section>
+                                            <section class="col-auto mx-0 px-0 ">
+                                                <a href="?year={{request.args.get('year')}}&week={{request.args.get('week')}}&day={{request.args.get('day')}}&activity={{request.args.get('activity')}}&status=False&booking={{booking_item.bookingID}}" class="btn btn-danger">Отклонить</a>
+                                            </section>
+                                        </section>
+                                    </section>
+                                </section>
+                            </section>
+                        {% elif booking_item.status == True %}
+                            <section class="row my-1 list-group-item list-group-item-info border border-primary border-2">
+                                <section class="row px-0 mx-0">
+                                    <section class="col text-start mx-1 px-1"><b>{{booking_item.lastname}} {{booking_item.firstname}} {{booking_item.middlename}}</b></section>
+                                    <section class="col text-end mx-1 px-1"><b>Группа</b>: {{booking_item.group}}</section>
+                                </section>
+                                <section class="row px-0 mx-0">
+                                    <section class="col text-start mx-1 px-1"><b>E-mail</b>: {{booking_item.email}}</section>
+                                    <section class="col mx-1 px-1">
+                                        <section class="row my-1 text-end px-0 mx-0">
+                                            <section class="col mx-0 px-0">
+                                                <a href="?year={{request.args.get('year')}}&week={{request.args.get('week')}}&day={{request.args.get('day')}}&activity={{request.args.get('activity')}}&status=False&booking={{booking_item.bookingID}}" class="btn btn-danger">Отклонить</a>
+                                            </section>
+                                        </section>
+                                    </section>
+                                </section>
+                            </section>
+                        {% elif booking_item.status == False %}
+                            <section class="row my-1 list-group-item list-group-item-danger border border-danger border-2">
+                                <section class="row px-0 mx-0">
+                                    <section class="col text-start mx-1 px-1"><b>{{booking_item.lastname}} {{booking_item.firstname}} {{booking_item.middlename}}</b></section>
+                                    <section class="col text-end mx-1 px-1"><b>Группа</b>: {{booking_item.group}}</section>
+                                </section>
+                                <section class="row px-0 mx-0">
+                                    <section class="col text-start mx-1 px-1"><b>E-mail</b>: {{booking_item.email}}</section>
+                                    <section class="col mx-1 px-1">
+                                        <section class="row my-1 text-end px-0 mx-0">
+                                            <section class="col mx-0 px-0">
+                                                <a href="?year={{request.args.get('year')}}&week={{request.args.get('week')}}&day={{request.args.get('day')}}&activity={{request.args.get('activity')}}&status=True&booking={{booking_item.bookingID}}" class="btn btn-success">Принять</a>
+                                            </section>
+                                        </section>
+                                    </section>
+                                </section>
+                            </section>
+                        {% endif %}
+                    {% endfor %}
+                </section>
+            {% endif %}
+
+            <script>
+                // Наименование
+                const input_title = document.getElementById('input_title');
+                input_title.value = '{{activity.title}}';
+
+                // Мастерская
+                const select_workshop = document.getElementById('select_workshop');
+                select_workshop.value = {{activity.workshop}};
+
+                // Ведущий
+                const select_owner = document.getElementById('select_owner');
+                select_owner.value = {{activity.owner}};
+
+                // Дата
+                const input_date = document.getElementById('input_date');
+                input_date.value = '{{activity.date}}';
+
+                // Время активности
+                const select_timeline = document.getElementById('select_time');
+                select_timeline.value = {{activity.timeline}};
+
+                // Тип активности
+                const select_type = document.getElementById('select_type');
+                select_type.value = {{activity.type}};
+
+                // Количество мест
+                const input_count_seats = document.getElementById('input_count_seats');
+                input_count_seats.value = {{activity.count_seats}};
+
+                // Статус активности
+                {% if activity.status == True %}
+                    const check_status_true = document.getElementById('status-success');
+                    check_status_true.checked=true;
+                {% elif activity.status == False %}
+                    const check_status_false = document.getElementById('status-danger');
+                    check_status_false.checked=true;
+                {% endif %}
+
+
+                // Бронирование мест
+                const check_booking = document.getElementById('booking_status');
+                {% if activity.booking == True %}
+                    check_booking.checked=true;
+                {% elif activity.booking == False %}
+                    check_booking.checked=true;
+                {% endif %}
+
+            </script>
+            <script>
+                const emptyStatus_Button = document.getElementById('reset_status');
+                // noinspection JSUnresolvedFunction
+                emptyStatus_Button.onclick = function () {
+                    const check_status_true = document.getElementById('status-success');
+                    check_status_true.checked=false;
+                    const check_status_false = document.getElementById('status-danger');
+                    check_status_false.checked=false;
+                }
+            </script>
+
+        </div>
+    </div>
+{% endblock %}

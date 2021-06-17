@@ -88,23 +88,36 @@
                     {% endwith %}
                 {% endif %}
                 {% for workshop in workshop_all_list %}
-                    <button class="mb-2 list-group-item-action list-group-item-info w-100 alert alert-info"
-                            data-bs-toggle="modal"
-                            data-bs-target="#workshopInfo"
-                                data-bs-number="{{workshop.number}}"
-                                data-bs-title="{{workshop.title}}"
-                                data-bs-description="{{workshop.description}}"
-                                data-bs-owner="{{workshop.owner.id}}"
-                                data-bs-count_seats="{{ workshop.count_seats }}">
-                        <div class="row">
-                            <div class="col text-start"><h5> <b>{{ workshop.title }}</b> </h5></div>
-                            <div class="col-3 text-end"><h6> <b>Кабинет</b>: {{ workshop.number }} </h6></div>
-                        </div>
-                        <div class="row">
-                            <div class="col">Количество мест: {{ workshop.count_seats }}</div>
-                            <div class="col text-end"><b>Зведующий</b>: {{ workshop.owner.lastname }} {{ workshop.owner.firstname }} {{ workshop.owner.middlename }}</div>
-                        </div>
-                    </button>
+                    {% if not current_user.is_anonymous %}
+                        <button class="mb-2 list-group-item-action list-group-item-info w-100 alert alert-info"
+                                data-bs-toggle="modal"
+                                data-bs-target="#workshopInfo"
+                                    data-bs-number="{{workshop.number}}"
+                                    data-bs-title="{{workshop.title}}"
+                                    data-bs-description="{{workshop.description}}"
+                                    data-bs-owner="{{workshop.owner.id}}"
+                                    data-bs-count_seats="{{ workshop.count_seats }}">
+                            <div class="row">
+                                <div class="col text-start"><h5> <b>{{ workshop.title }}</b> </h5></div>
+                                <div class="col-3 text-end"><h6> <b>Кабинет</b>: {{ workshop.number }} </h6></div>
+                            </div>
+                            <div class="row">
+                                <div class="col">Количество мест: {{ workshop.count_seats }}</div>
+                                <div class="col text-end"><b>Зведующий</b>: {{ workshop.owner.lastname }} {{ workshop.owner.firstname }} {{ workshop.owner.middlename }}</div>
+                            </div>
+                        </button>
+                    {% else %}
+                        <a href="/workshops/{{ workshop.number }}" style="text-decoration: none;" class="mb-2 list-group-item-action list-group-item-info w-100 alert alert-info">
+                            <div class="row">
+                                <div class="col text-start"><h5> <b>{{ workshop.title }}</b> </h5></div>
+                                <div class="col-3 text-end"><h6> <b>Кабинет</b>: {{ workshop.number }} </h6></div>
+                            </div>
+                            <div class="row">
+                                <div class="col">Количество мест: {{ workshop.count_seats }}</div>
+                                <div class="col text-end"><b>Зведующий</b>: {{ workshop.owner.lastname }} {{ workshop.owner.firstname }} {{ workshop.owner.middlename }}</div>
+                            </div>
+                        </a>
+                    {% endif %}
                 {% endfor %}
             </div>
         </div>

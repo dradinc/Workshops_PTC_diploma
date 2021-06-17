@@ -102,6 +102,13 @@
                     {% if current_user.is_anonymous %}
                         <div class="collapse navbar-collapse">
                             <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                                <li class="nav-item">
+                                    {% if page=='workshops' %}
+                                        <a class="nav-link active" aria-current="page" href="/workshops">Мастерские</a>
+                                    {% else %}
+                                        <a class="nav-link" aria-current="page" href="/workshops">Мастерские</a>
+                                    {% endif %}
+                                </li>
                             </ul>
                             <div class="d-flex">
                                 <a class="btn btn-outline-success" href="/signin">Авторизация</a>
@@ -120,7 +127,7 @@
         <footer class="mt-auto text-white-50 bg-dark text-center">
             <p class="mb-0 mt-3" >Создано для <a href="https://www.novsu.ru/dept/25137734/" target="_blank">Политехнического колледжа</a>, by <a href="https://vk.com/dradinc" target="_blank">@dradinc</a>.</p>
             <p class="mb-0 pb-0">Великий Новгород © 2021</p>
-            <p class="text-end me-3 mb-2 mt-0 pt-0">Приложение: v0.0.1(dev)</p>
+            <p class="text-end me-3 mb-2 mt-0 pt-0">Приложение: v0.0.2(dev)</p>
         </footer>
     </div>
 

@@ -24,12 +24,14 @@ class activity(appDB.Model):
 
     def __init__(self, **kwargs):
         self.title = kwargs.get('title')
-        self.type = int(kwargs.get('type'))
-        self.timeline = int(kwargs.get('timeline'))
         self.workshop = kwargs.get('workshop')
         self.owner = kwargs.get('owner')
         self.date = kwargs.get('date')
+        self.timeline = int(kwargs.get('timeline'))
+        self.type = int(kwargs.get('type'))
         self.count_seats = kwargs.get('count_seats')
+        self.status = kwargs.get('status')
+        self.booking = kwargs.get('booking')
 
 
 def get_activity(day, number):

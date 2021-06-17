@@ -18,7 +18,10 @@ def users_page():
             'lastname': "",
             'middlename': ""
         }
-        return render_template('users.html', all_users=all_users, page='users', new_user=params_empty)
+        return render_template('users.html',
+                               all_users=all_users,
+                               page='users',
+                               new_user=params_empty)
     else:
         return redirect('/')
 

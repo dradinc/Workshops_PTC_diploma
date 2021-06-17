@@ -1,0 +1,98 @@
+{% extends 'template.html' %}
+
+{% block page_name %}
+    Заявка
+{% endblock %}
+
+{% block page_content %}
+    <div class="d-flex w-100 h-100 p-3">
+        <div class="px-3 w-100">
+
+            <!-- Данные выбранной активности -->
+            <form class="container" method="post">
+                <!-- "Заголовок" страницы -->
+                <h2 class="h3 mb-1 fw-normal text-center">Новая заявка</h2>
+                <!-- Кнопки: Отправить-->
+                <section class="row mt-1 mb-5">
+                    <!-- Отправить -->
+                    <section class="col-xs-6 col-md-4 mx-0 my-0 justify-content-center d-flex">
+                    </section>
+
+                    <section class="col-xs-6 col-md-4 mx-0 my-0 justify-content-center d-flex text-muted">
+                        <p>( * — обязательные поля )</p>
+                    </section>
+
+                    <section class="col-xs-6 col-md-4 mx-0 my-0 justify-content-center d-flex">
+                    </section>
+                </section>
+
+                {% for msg in get_flashed_messages() %}
+                    <div class="alert alert-danger">{{msg}}</div>
+                {% endfor %}
+
+                <!-- Фамилия -->
+                <section class="row my-1 mx-1 form-floating">
+                    <input class="form-control" name="input_lastname" id="input_lastname" maxlength="64">
+                    <label for="input_lastname">Фамилия *</label>
+                </section>
+
+                <!-- Имя -->
+                <section class="row my-1 mx-1 form-floating">
+                    <input class="form-control" name="input_firstname" id="input_firstname" maxlength="64">
+                    <label for="input_firstname">Имя *</label>
+                </section>
+
+                <!-- Отчество -->
+                <section class="row my-1 mx-1 form-floating">
+                    <input class="form-control" name="input_middlename" id="input_middlename" maxlength="64">
+                    <label for="input_middlename">Отчество</label>
+                </section>
+
+                <!-- Группа -->
+                <section class="row my-1 mx-1 form-floating">
+                    <input class="form-control" name="input_group" id="input_group" maxlength="4">
+                    <label for="input_group">Группа *</label>
+                </section>
+
+                <!-- Почта -->
+                <section class="row my-1 mx-1 form-floating">
+                    <input class="form-control" name="input_email" id="input_email" maxlength="64">
+                    <label for="input_email">E-mail *</label>
+                </section>
+
+                <!-- Кнопки: Отправить-->
+                <section class="row mt-3">
+                    <!-- Отправить -->
+                    <section class="col-xs-6 col-md-4 mx-0 my-0 justify-content-center d-flex">
+                    </section>
+
+                    <section class="col-xs-6 col-md-4 mx-0 my-0 justify-content-center d-flex">
+                        <button type="submit" class="btn btn-outline-success w-100 btn-add-edit-act" name="workshop_activity_submit" value="add_booking">Отправить</button>
+                    </section>
+
+                    <section class="col-xs-6 col-md-4 mx-0 my-0 justify-content-center d-flex">
+                    </section>
+                </section>
+            </form>
+
+            <script>
+                {% if booking_param %}
+                    const input_lastname = document.getElementById('input_lastname');
+                    input_lastname.value = '{{booking_param.lastname}}';
+
+                    const input_firstname = document.getElementById('input_firstname');
+                    input_firstname.value = '{{booking_param.firtsname}}';
+
+                    const input_middlename = document.getElementById('input_middlename');
+                    input_middlename.value = '{{booking_param.middlename}}';
+
+                    const input_group = document.getElementById('input_group');
+                    input_group.value = '{{booking_param.group}}';
+
+                    const input_email = document.getElementById('input_email');
+                    input_email.value = '{{booking_param.email}}';
+                {% endif %}
+            </script>
+        </div>
+    </div>
+{% endblock %}

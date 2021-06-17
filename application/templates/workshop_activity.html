@@ -450,13 +450,13 @@
                                     <div class="col"><input class="form-control activity_id" readonly="readonly" name="input_activity_id" id="input_activity_id"></div>
                                 </div>
 
-                                <!-- Наименование -->
+                                <!-- Наименование    ГОТОВО-->
                                 <div class="row mb-2">
                                     <div class="col-3 py-1 text-end"><b>Название:</b></div>
                                     <div class="col"><textarea class="form-control activity_title" name="input_title" id="input_title" style="resize: None;"></textarea></div>
                                 </div>
 
-                                <!-- Дата -->
+                                <!-- Дата    ГОТОВО-->
                                 <div class="row mb-2">
                                     <div class="col-3 py-1 text-end"><b>Дата:</b></div>
                                     <div class="col"><input type="date" class="form-control activity_date" name="input_date" id="input_date" readonly="readonly"></div>
@@ -468,7 +468,7 @@
                                     <div class="col"><input class="form-control activity_count_seats" name="input_count_seats" id="input_count_seats"></div>
                                 </div>
 
-                                <!-- Тип активности -->
+                                <!-- Тип активности   ГОТОВО -->
                                 <div class="row mb-2">
                                     <div class="col-3 py-1 text-end"><b>Тип:</b></div>
                                     <div class="col">
@@ -482,7 +482,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Временной промежуток -->
+                                <!-- Временной промежуток   ГОТОВО -->
                                 <div class="row mb-2">
                                     <div class="col-3 py-1 text-end"><b>Время:</b></div>
                                     <div class="col">
@@ -496,7 +496,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Мастерская -->
+                                <!-- Мастерская  ГОТОВО-->
                                 <div class="row mb-2">
                                     <div class="col-3 py-1 text-end"><b>Мастерская:</b></div>
                                     <div class="col">
@@ -510,7 +510,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Ведущий -->
+                                <!-- Ведущий   ГОТОВО -->
                                 <div class="row mb-2">
                                     <div class="col-3 py-1 text-end"><b>Ведущий:</b></div>
                                     <div class="col">
@@ -638,4 +638,209 @@
             selectActivityOwner.value = owner_id
         })
     </script>
+
+
+    <!-- Форма  -->
+    <div class="modal fade" id="ActivityForm" tabindex="-1" aria-labelledby="exampleModalCenteredScrollableTitle" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="title">Активность</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body text-center">
+                    <div class="form-signin w-80">
+                        <form method="POST" class="grid w-80">
+                            <div class="row">
+                                <!-- ID -->
+                                <div class="row mb-2">
+                                    <div class="col-3 py-1 text-end"><b>ID:</b></div>
+                                    <div class="col"><input class="form-control activity_id" readonly="readonly" name="input_activity_id" id="input_activity_id"></div>
+                                </div>
+
+                                <!-- Наименование -->
+                                <div class="row mb-2">
+                                    <div class="col-3 py-1 text-end"><b>Название:</b></div>
+                                    <div class="col"><textarea class="form-control activity_title" name="input_title" id="input_title" style="resize: None;"></textarea></div>
+                                </div>
+
+                                <!-- Дата -->
+                                <div class="row mb-2">
+                                    <div class="col-3 py-1 text-end"><b>Дата:</b></div>
+                                    <div class="col"><input type="date" class="form-control activity_date" name="input_date" id="input_date" readonly="readonly"></div>
+                                </div>
+
+                                <!-- Количество необходим мест -->
+                                <div class="row mb-2">
+                                    <div class="col-3 py-1 px-1 text-end"><b>Нужно мест:</b></div>
+                                    <div class="col"><input class="form-control activity_count_seats" name="input_count_seats" id="input_count_seats"></div>
+                                </div>
+
+                                <!-- Тип активности -->
+                                <div class="row mb-2">
+                                    <div class="col-3 py-1 text-end"><b>Тип:</b></div>
+                                    <div class="col">
+                                        <select class="form-select activity_type" name="select_type" id="select_type">
+                                            {% for type in activity_type %}
+                                                <option value="{{ type.typeID }}">
+                                                    {{ type.title }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Временной промежуток -->
+                                <div class="row mb-2">
+                                    <div class="col-3 py-1 text-end"><b>Время:</b></div>
+                                    <div class="col">
+                                        <select class="form-select activity_time" name="select_time" id="select_time">
+                                            {% for time in timeline %}
+                                                <option value="{{ time.timelineID }}">
+                                                    {{ time.title }} ({{ time.start }} - {{ time.end }})
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Мастерская -->
+                                <div class="row mb-2">
+                                    <div class="col-3 py-1 text-end"><b>Мастерская:</b></div>
+                                    <div class="col">
+                                        <select class="form-select activity_workshop" name="select_workshop" id="select_workshop">
+                                            {% for workshop in workshops %}
+                                                <option value="{{ workshop.number }}">
+                                                   {{ workshop.number }}-{{ workshop.title[:25] }}...
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Ведущий -->
+                                <div class="row mb-2">
+                                    <div class="col-3 py-1 text-end"><b>Ведущий:</b></div>
+                                    <div class="col">
+                                        <select class="form-select activity_owner" name="select_owner" id="select_owner">
+                                            <option value="0"></option>
+                                            {% for owner_item in owner %}
+                                                <option value="{{ owner_item.id }}">
+                                                    {{ owner_item.lastname }} {{ owner_item.firstname[:1] }}. {{ owner_item.middlename[:1] }}.
+                                                    ({% if owner_item.role == 0 %}
+                                                        Администратор
+                                                    {% elif owner_item.role == 1 %}
+                                                        Диспетчер-расписания
+                                                    {% elif owner_item.role == 2 %}
+                                                        Преподаватель
+                                                    {% endif %})
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {% if not current_user.is_anonymous %}
+                                    {% if current_user.role == 0 or current_user.role == 1 %}
+                                    <div class="row mb-2 mt-4">
+                                        <div class="col"><button class="btn btn-outline-success w-100 btn-add-edit-act" name="workshop_activity_submit"></button></div>
+                                        <div class="col"><button class="btn btn-outline-danger w-100 btn-del-act" name="workshop_activity_submit">Удалить</button></div>
+                                    </div>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script>
+        var ActivityForm = document.getElementById('ActivityForm')
+        ActivityForm.addEventListener('show.bs.modal', function (event) {
+
+            var button = event.relatedTarget
+
+            //
+            var methods = button.getAttribute('data-bs-methods')
+
+            // Активность
+            var activity_date_text = button.getAttribute('data-bs-date-text')
+            var activity_date = button.getAttribute('data-bs-date')
+            var activityID = button.getAttribute('data-bs-activity_id')
+            var activity_title = button.getAttribute('data-bs-activity_title')
+            var status = button.getAttribute('data-bs-activity_status')
+            var booking = button.getAttribute('data-bs-activity_booking')
+            var count_seats = button.getAttribute('data-bs-activity_count_seats')
+            // Тип
+            var typeID = button.getAttribute('data-bs-type_type_id')
+            // Промежуток
+            var timelineID = button.getAttribute('data-bs-time_timeline_id')
+            // Мастерская
+            var workshop_number = button.getAttribute('data-bs-workshop_number')
+            var workshop_title = button.getAttribute('data-bs-workshop_title')
+            var workshop_count_seats = button.getAttribute('data-bs-workshop_count_seats')
+            // Ведущий
+            var owner_id = button.getAttribute('data-bs-owner_id')
+
+            {% if not current_user.is_anonymous %}
+                {% if current_user.role == 0 or current_user.role == 1 %}
+                    // Кнопки
+                    var modalButtonDel = ActivityForm.querySelector('.btn-del-act')
+                    var modalButtonAddEdit = ActivityForm.querySelector('.btn-add-edit-act')
+
+                    if (methods === 'add_activity') {
+                        modalButtonDel.disabled = true;
+                        modalButtonAddEdit.value = 'add_activity'
+                        modalButtonAddEdit.textContent = 'Добавить'
+                    }
+                    else {
+                        modalButtonDel.disabled = false
+                        modalButtonDel.value = 'del_activity'
+                        modalButtonAddEdit.value = 'edit_activity'
+                        modalButtonAddEdit.textContent = 'Изменить'
+                    }
+                {% endif %}
+            {% endif %}
+
+            // Поля ввода
+            var labelTitle = ActivityForm.querySelector('.modal-title')
+            var inputActivityID = ActivityForm.querySelector('.activity_id')
+            var inputActivityTitle = ActivityForm.querySelector('.activity_title')
+            var inputActivityDate = ActivityForm.querySelector('.activity_date')
+            var inputActivityCountSeats = ActivityForm.querySelector('.activity_count_seats')
+            var selectActivityType = ActivityForm.querySelector('.activity_type')
+            var selectActivityTime = ActivityForm.querySelector('.activity_time')
+            var selectActivityWorkshop = ActivityForm.querySelector('.activity_workshop')
+            var selectActivityOwner = ActivityForm.querySelector('.activity_owner')
+
+            {% if current_user.is_anonymous %}
+                inputActivityTitle.disabled = true
+                inputActivityCountSeats.disabled = true
+                selectActivityType.disabled = true
+                selectActivityTime.disabled = true
+                selectActivityWorkshop.disabled = true
+                selectActivityOwner.disabled = true
+            {% endif %}
+
+            labelTitle.textContent = 'Активность ' + ' (' + activity_date_text + ')'
+            inputActivityID.value = activityID
+            inputActivityTitle.value = activity_title
+            inputActivityDate.value = activity_date
+            inputActivityCountSeats.value = count_seats
+            selectActivityType.value = typeID
+            selectActivityTime.value = timelineID
+            selectActivityWorkshop.value = {{number}}
+            selectActivityOwner.value = owner_id
+        })
+    </script>
+
+
 {% endblock %}

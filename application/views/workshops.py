@@ -109,8 +109,10 @@ def workshop_post():
         elif request.form['submit_workshop'] == 'open_activity':
             number = request.form.get('now_number')
             now = datetime.now()
-            return redirect('/workshops/' + str(number) + '?year=' + str(now.isocalendar()[0]) + '&week=' + str(
-                now.isocalendar()[1]))
+            return redirect('/workshops/'
+                            + str(number)
+                            + '?year=' + str(now.isocalendar()[0])
+                            + '&week=' + str(now.isocalendar()[1]))
     except ValueError:
         flash('В поле "Количество мест" нужно вводить число!')
         error = True
